@@ -5,7 +5,7 @@
  * @author Juan_
  *
  */
-module P2P {
+module ClientServerChat {
 	requires java.desktop;
 	requires java.logging;
 }
