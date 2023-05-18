@@ -32,6 +32,10 @@ public class Servidor implements Runnable {
         }
         return instancia;
     }
+    
+	public Socket getSocket() {
+		return socket;
+	}
 
     @Override
     public void run() {
@@ -83,7 +87,7 @@ public class Servidor implements Runnable {
                 // Enviar el nombre del otro cliente al cliente actual
                 //out.println(otherClientName);
 
-                controlador.ventanaChat();
+                //controlador.ventanaChat();
             } catch (IOException e) {
                 // Manejar la excepción apropiadamente
             } finally {

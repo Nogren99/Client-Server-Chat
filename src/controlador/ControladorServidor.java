@@ -122,7 +122,7 @@ public class ControladorServidor implements ActionListener, Runnable {
 	public void run() {
 		Chat vista = (Chat) this.vista;
 		try {
-			while (!Sistema.getInstancia().getSocket().isInputShutdown() ){
+			while (!Servidor.getInstancia().getSocket().isInputShutdown() ){
 				String mensaje =  this.sistema.recibirMensaje();
 				//Si el mensaje es null es debido a que el otro usuario cerro la comunicacion
 				if (mensaje==null) 

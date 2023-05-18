@@ -11,6 +11,7 @@ import javax.swing.JTextField;
 import modelo.Usuario;
 import negocio.Sistema;
 import negocio.Cliente;
+import negocio.Servidor;
 import vista.Ivista;
 import vista.SistemaDeMensajeria;
 import vista.Bienvenido;
@@ -86,14 +87,10 @@ public class ControladorCliente implements ActionListener, Runnable {
         	String msj = ventana.getTextField().getText();
         	System.out.println("mensaje: "+msj);
         	
-        	try {
-                if (msj != null && !msj.isEmpty()) {
-                    this.sistema.enviarMensaje(msj);
-                    ventana.getTextArea().append(Usuario.getInstance().getNombre()+" : " +msj+"\n");
-                }
-            } catch (IOException ex) {
-                throw new RuntimeException(ex);
-            }
+        	if (msj != null && !msj.isEmpty()) {
+			    this.cliente.getInstancia().enviarMensaje(msj);
+			    ventana.getTextArea().append(Usuario.getInstance().getNombre()+" : " +msj+"\n");
+			}
         }
     }
     
@@ -119,8 +116,8 @@ public class ControladorCliente implements ActionListener, Runnable {
 	public void run() {
 		Chat vista = (Chat) this.vista;
 		try {
-			while (!Sistema.getInstancia().getSocket().isInputShutdown() ){
-				String mensaje =  this.sistema.recibirMensaje();
+			while (!Servidor.getInstancia().getSocket().isInputShutdown() ){
+				String mensaje =  this.cliente.getInstancia().recibirMensaje();
 				//Si el mensaje es null es debido a que el otro usuario cerro la comunicacion
 				if (mensaje==null) 
 	                break;
