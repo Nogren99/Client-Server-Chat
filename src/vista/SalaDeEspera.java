@@ -75,12 +75,12 @@ public class SalaDeEspera extends JFrame implements Ivista {
 		this.panel_6.add(this.panel_4);
 		this.panel_4.setLayout(new BorderLayout(0, 0));
 		
-		this.lblNewLabel = new JLabel("Sala de");
+		this.lblNewLabel = new JLabel("Servidor");
 		this.lblNewLabel.setBackground(Color.GRAY);
 		this.lblNewLabel.setFont(new Font("Tahoma", Font.PLAIN, 26));
 		this.panel_4.add(this.lblNewLabel, BorderLayout.NORTH);
 		
-		this.lblNewLabel_1 = new JLabel("Espera");
+		this.lblNewLabel_1 = new JLabel("Abrido");
 		this.lblNewLabel_1.setBackground(new Color(195, 222, 214));
 		this.lblNewLabel_1.setFont(new Font("Tahoma", Font.PLAIN, 26));
 		this.panel_4.add(this.lblNewLabel_1);

@@ -1,13 +1,13 @@
 package main;
 
 import negocio.Sistema;
-import controlador.ControladorCliente;
+import controlador.ControladorServidor;
 
-public class Main {
+public class Servidor {
 
     public static void main(String[] args) {
     	Sistema sistema = Sistema.getInstancia();
-        ControladorCliente controlador = new ControladorCliente();
+        ControladorServidor controlador = new ControladorServidor();
         	
     } 
 

@@ -20,7 +20,7 @@ import javax.swing.JList;
 import java.awt.Color;
 import java.awt.Font;
 import javax.swing.JTextArea;
-import controlador.ControladorSistema;
+import controlador.ControladorCliente;
 
 public class Chat extends JFrame implements Ivista, WindowListener {
 
@@ -190,7 +190,7 @@ public class Chat extends JFrame implements Ivista, WindowListener {
 
 	@Override
 	public void windowClosing(WindowEvent e) {
-		ControladorSistema.getInstancia().cerrarVentana();
+		ControladorCliente.getInstancia().cerrarVentana();
 	}
 
 	@Override

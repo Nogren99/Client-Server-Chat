@@ -2,13 +2,13 @@ package negocio;
 import java.io.*;
 import java.net.*;
 
-import controlador.ControladorSistema;
+import controlador.ControladorCliente;
 import modelo.Usuario;
 
 public class Sistema implements Runnable {
 
 	private static Sistema instancia;
-	private static ControladorSistema controlador;
+	private static ControladorCliente controlador;
 	private ServerSocket servidor = null;
 	private Usuario user = Usuario.getInstance();
 	private ServerSocket socketServer;
@@ -32,7 +32,7 @@ public class Sistema implements Runnable {
             this.in = new BufferedReader(inSocket);
             this.out = new PrintWriter(socket.getOutputStream(), true);
             this.out.println(Usuario.getInstance().getNombre());
-            ControladorSistema.getInstancia().ventanaChat();
+            ControladorCliente.getInstancia().ventanaChat();
     	}catch (IOException e) {
     	}
     }
@@ -48,26 +48,70 @@ public class Sistema implements Runnable {
         	//ACTIVO MODO ESCUCHA
         	System.out.println("Modo escucha activado.");
         	this.socketServer = new ServerSocket(this.user.getPuerto());
-        	System.out.println(this.user.getPuerto());
-        	ControladorSistema.getInstancia().ventanaEspera();
-            this.socket = socketServer.accept();
-            
-            socketServer.close();
-            socketServer = null;
-            
-            //INICIO ENTRADAS Y SALIDAS
-            this.inSocket= new InputStreamReader(socket.getInputStream());
-            this.in = new BufferedReader(inSocket);
-            this.out = new PrintWriter(socket.getOutputStream(), true);
-            this.out.println(Usuario.getInstance().getNombre());
-            System.out.println("mi nombre es "+this.user.getNombre()+" y me conecte con mi amiguito "+ this.in.readLine());
+        	ControladorCliente.getInstancia().ventanaEspera();
+			while(true) {
+				System.out.println(this.user.getPuerto());
+	       
+	            this.socket = socketServer.accept();
+	            
+	            socketServer.close();
+	            socketServer = null;
+	            
+	            //INICIO ENTRADAS Y SALIDAS
+	            this.inSocket= new InputStreamReader(socket.getInputStream());
+	            this.in = new BufferedReader(inSocket);
+	            this.out = new PrintWriter(socket.getOutputStream(), true);
+	            this.out.println(Usuario.getInstance().getNombre());
+	            System.out.println("mi nombre es "+this.user.getNombre()+" y me conecte con mi amiguito "+ this.in.readLine());
 
-            ControladorSistema.getInstancia().ventanaChat();
+	            ControladorCliente.getInstancia().ventanaChat();  		
+			}
+        	
   
         }catch (IOException e) {
         }
     }
 
+    
+    /*
+     @Override
+    public void run() {
+        try {
+            boolean flag=true;
+            ServerSocket serverSocket = new ServerSocket(this.puertoEntrada);
+            while (flag) {
+                socket = serverSocket.accept();
+                int dialogButton = JOptionPane.showConfirmDialog (null, "Aceptar conexion entrante?","WARNING", 0); //0 es si, 1 es no
+                if (dialogButton==0) {
+                    this.out = new PrintWriter(socket.getOutputStream(), true);
+                    this.in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                    this.out.println("777");  //confirmo que se acepto la conexion
+                    System.out.println("Listo para el intercambio, in= "+ this.in);
+                    Controlador controlador = Controlador.getInstancia();
+                    controlador.setVistaServer(); 
+                    
+                    System.out.println("Entrando al recibidor");
+                    while(!socket.isClosed()) {
+                            System.out.println("A punto de leer el mensaje recibido");    
+                            String msg = this.in.readLine();
+                            System.out.println("Mensaje recibido: "+ msg);
+                            Controlador.getInstancia().agregarMensajeASever(msg);
+                    }
+                    flag=false;
+                    
+                    break;
+                } else {
+                    System.out.println("Conexion rechazada");
+                    this.aceptada=false;
+                }                
+            }
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }    
+    }
+     * */
+     
 	public BufferedReader getIn() {
 		return in;
 	}
