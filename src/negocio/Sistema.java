@@ -50,7 +50,7 @@ public class Sistema implements Runnable {
         	this.socketServer = new ServerSocket(this.user.getPuerto());
         	ControladorCliente.getInstancia().ventanaEspera();
 			while(true) {
-				System.out.println(this.user.getPuerto());
+				System.out.println(this.user.getPuerto()); //esto es el puerto del server!!! funciona bien pero hay error conceptual creo
 	       
 	            this.socket = socketServer.accept();
 	            

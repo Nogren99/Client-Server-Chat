@@ -3,11 +3,14 @@ package negocio;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 
 import controlador.ControladorCliente;
+import modelo.MensajeCliente;
 import modelo.Usuario;
 
 public class Servidor implements Runnable {
@@ -72,14 +75,24 @@ public class Servidor implements Runnable {
         public void run() {
             try {
                 // Configurar las entradas y salidas del cliente
+            	
+            	
+            	
+            	ObjectInputStream flujoEntrada = new ObjectInputStream(clientSocket.getInputStream());
+            	MensajeCliente paqueteMensaje = (MensajeCliente) flujoEntrada.readObject(); //espero que este metodo bloquee la ejecucion como el readline
+            	
                 InputStreamReader inSocket = new InputStreamReader(clientSocket.getInputStream());
                 in = new BufferedReader(inSocket);
-                out = new PrintWriter(clientSocket.getOutputStream(), true);
+                //out = new PrintWriter(clientSocket.getOutputStream(), true);
 
-                // Leer el nombre del cliente y enviarlo al otro cliente
-                String clientName = in.readLine();
-                System.out.println("El nombre del cliente es: " + clientName);
-                out.println(user.getNombre());
+                Socket socketEnvio = new Socket(paqueteMensaje.getIp(),paqueteMensaje.getPuerto());
+                ObjectOutputStream paqueteEnvio = new ObjectOutputStream(socketEnvio.getOutputStream());
+                
+                paqueteEnvio.writeObject(paqueteMensaje);
+
+               // String clientName = in.readLine();
+                System.out.println("El nombre del cliente es: " + paqueteMensaje.getName());
+              //  out.println(user.getNombre());
 
                 // Obtener el nombre del otro cliente
                 //String otherClientName = controlador.obtenerNombreOtroCliente();
@@ -88,7 +101,7 @@ public class Servidor implements Runnable {
                 //out.println(otherClientName);
 
                 //controlador.ventanaChat();
-            } catch (IOException e) {
+            } catch (IOException | ClassNotFoundException e) {
                 // Manejar la excepción apropiadamente
             } finally {
                 // Cerrar las conexiones y liberar los recursos

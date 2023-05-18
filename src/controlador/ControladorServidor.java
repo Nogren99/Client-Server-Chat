@@ -65,6 +65,8 @@ public class ControladorServidor implements ActionListener, Runnable {
         	
         	int puerto = Integer.parseInt( ventana.getTextField_1().getText() );
         	String nombre = ventana.getTextField().getText();
+        	
+        	//esto no va en Usuario. cambiar a server
         	Usuario.getInstance().setNombre(nombre);
         	Usuario.getInstance().setPuerto(puerto);
         	
