@@ -49,6 +49,17 @@ public class Bienvenido extends JFrame implements Ivista {
 	private JTextField textField_1;
 	private JLabel lblNewLabel_4;
 	private JTextField textField_2;
+	private JPanel panel_21;
+	private JPanel panel_22;
+	private JPanel panel_24;
+	private JPanel panel_23;
+	private JPanel panel_25;
+	private JPanel panel_26;
+	private JPanel panel_27;
+	private JLabel lblNewLabel_5;
+	private JLabel lblNewLabel_6;
+	private JTextField textFieldTuIP;
+	private JTextField textFieldTuPuerto;
 
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
@@ -193,8 +204,53 @@ public class Bienvenido extends JFrame implements Ivista {
 		
 		this.panel_3 = new JPanel();
 		this.panel_3.setBackground(new Color(195, 222, 214));
-		this.panel_3.setForeground(new Color(102, 205, 170));
+		this.panel_3.setForeground(new Color(195, 222, 214));
 		this.panel.add(this.panel_3);
+		this.panel_3.setLayout(new GridLayout(5, 0, 0, 0));
+		
+		this.panel_21 = new JPanel();
+		this.panel_3.add(this.panel_21);
+		this.panel_21.setLayout(new GridLayout(0, 2, 0, 0));
+		
+		this.panel_26 = new JPanel();
+		this.panel_26.setBackground(new Color(195, 222, 214));
+		this.panel_21.add(this.panel_26);
+		this.panel_26.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
+		
+		this.lblNewLabel_5 = new JLabel("Tu IP");
+		this.panel_26.add(this.lblNewLabel_5);
+		
+		this.textFieldTuIP = new JTextField();
+		this.panel_26.add(this.textFieldTuIP);
+		this.textFieldTuIP.setColumns(10);
+		
+		this.panel_27 = new JPanel();
+		this.panel_27.setBackground(new Color(195, 222, 214));
+		this.panel_21.add(this.panel_27);
+		
+		this.lblNewLabel_6 = new JLabel("Tu puerto");
+		this.panel_27.add(this.lblNewLabel_6);
+		
+		this.textFieldTuPuerto = new JTextField();
+		this.panel_27.add(this.textFieldTuPuerto);
+		this.textFieldTuPuerto.setColumns(10);
+		
+		this.panel_22 = new JPanel();
+		this.panel_22.setBackground(new Color(195, 222, 214));
+		this.panel_22.setForeground(new Color(195, 222, 214));
+		this.panel_3.add(this.panel_22);
+		
+		this.panel_24 = new JPanel();
+		this.panel_24.setBackground(new Color(195, 222, 214));
+		this.panel_3.add(this.panel_24);
+		
+		this.panel_23 = new JPanel();
+		this.panel_23.setBackground(new Color(195, 222, 214));
+		this.panel_3.add(this.panel_23);
+		
+		this.panel_25 = new JPanel();
+		this.panel_25.setBackground(new Color(195, 222, 214));
+		this.panel_3.add(this.panel_25);
 	}
 
 	
@@ -230,5 +286,17 @@ public class Bienvenido extends JFrame implements Ivista {
 		this.actionListener=actionListener;
 		
 	}
+
+	public JTextField getTextFieldTuIP() {
+		return textFieldTuIP;
+	}
+
+	public JTextField getTextFieldTuPuerto() {
+		return textFieldTuPuerto;
+	}
+	
+	
+	
+	
 
 }
