@@ -71,6 +71,7 @@ public class ControladorCliente implements ActionListener, Runnable {
 			} catch (UnknownHostException e1) {
 				e1.printStackTrace();
 			}
+        	Usuario.getInstance().setPuerto( Integer.parseInt(ventana.getTextFieldTuPuerto().getText()));
         	
         	//DATOS DEL USUARIO AL QUE ME CONECTO
         	String ip = ventana.getTextField().getText();
