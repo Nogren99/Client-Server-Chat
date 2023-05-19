@@ -22,15 +22,15 @@ public class Servidor implements Runnable {
     private static Servidor instancia;
     private static ControladorServidor controlador;
 
-    private ServerSocket servidor;
+
     private Usuario user;
     private ServerSocket socketServer;
     private Socket socket;
     private PrintWriter out;
     private BufferedReader in;
     private InputStreamReader inSocket;
-    private Map<String, Socket> clientes;
-    private Map<String, ObjectOutputStream> flujosSalida;
+    private HashMap<String, Socket> clientes;
+    private HashMap<String, ObjectOutputStream> flujosSalida;
 
     private Servidor() {
         user = Usuario.getInstance();
@@ -111,6 +111,16 @@ public class Servidor implements Runnable {
             public void run() {
                 try {
                     // El cliente debe enviar su nombre primero
+                	/**/
+                	 //enviar lista de clientes
+                    ObjectOutputStream listaClientes = new ObjectOutputStream(cliente.getOutputStream());
+                    System.out.println("enviandooooooooo");
+                    listaClientes.writeObject(this.cliente);
+                    System.out.println("enviandooooooooo");
+                    listaClientes.flush();
+                    System.out.println("enviandooooooooo");
+                	
+                	
                 	MensajeCliente msj = new MensajeCliente();
                 	msj =(MensajeCliente) flujoEntrada.readObject();
                 	System.out.println(msj);
@@ -118,6 +128,8 @@ public class Servidor implements Runnable {
                     nombreCliente = msj.getName();
                     clientes.put(nombreCliente, cliente);
                     flujosSalida.put(nombreCliente, flujoSalida);
+                    
+                   
 
                     while (true) {
                         Object objeto = flujoEntrada.readObject();

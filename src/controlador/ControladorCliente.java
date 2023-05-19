@@ -5,7 +5,12 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowListener;
 import java.io.IOException;
 import java.net.InetAddress;
+import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 
@@ -91,7 +96,7 @@ public class ControladorCliente implements ActionListener, Runnable {
         	
         	//Conectar al servidor
         	this.cliente.conectar(ip, puerto);
-        	this.cliente.esperarConexion();
+        	//this.cliente.esperarConexion();
         	this.vista.cerrar();
         	
         //====VENTANA DE CHAT====
@@ -110,6 +115,31 @@ public class ControladorCliente implements ActionListener, Runnable {
     public void ventanaEspera() {
     	this.vista.cerrar();
     	this.setVista(new SalaDeEsperaCliente());
+    	Thread hilo = new Thread(Cliente.getInstancia());
+        hilo.start();
+    	//this.cliente.esperarConexion();
+    }
+    
+    public void actualizaLista(HashMap clientes) {
+    	SalaDeEsperaCliente ventana = (SalaDeEsperaCliente) this.vista;
+    	
+    	for (int i=0; i<clientes.size() ;i++) {
+    		System.out.println("recibi esto:"+clientes);
+    	}
+    	Iterator<String> iterator = clientes.keySet().iterator();
+    	
+    	while (iterator.hasNext()) {
+    	    String clave = iterator.next();
+    	    Socket valor = (Socket) clientes.get(clave);
+    	    
+    	    // Haz algo con la clave y el valor del elemento actual
+    	    System.out.println("Clave: " + clave + ", Valor: " + valor);
+    	}
+    	
+    	
+    	ventana.getModeloLista().clear();
+    	ventana.getModeloLista().addAll((Collection<? extends Object>) clientes); //si no adna usar iterador
+    	ventana.repaint();
     }
     
     
@@ -125,6 +155,8 @@ public class ControladorCliente implements ActionListener, Runnable {
     	Sistema.getInstancia().cerrarSockets();
     	this.comunicacion.interrupt();
     }
+    
+
 
 	@Override
 	public void run() {

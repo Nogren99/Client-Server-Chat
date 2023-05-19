@@ -7,12 +7,14 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.HashMap;
+import java.util.Map;
 
 import controlador.ControladorCliente;
 import modelo.MensajeCliente;
 import modelo.Usuario;
 
-public class Cliente {
+public class Cliente implements Runnable{
 	private static Cliente instancia;
     private Socket socket;
     private MensajeCliente paqueteMsj = new MensajeCliente();
@@ -67,7 +69,7 @@ public class Cliente {
 		}
         
     }
-    
+    /*
     public void esperarConexion() {
         try {
             while (true) {
@@ -81,7 +83,8 @@ public class Cliente {
         } catch (IOException | ClassNotFoundException e) {
             // Manejar la excepción apropiadamente
         }
-    }
+    }*/
+    
 
     public MensajeCliente recibirMensaje() {
         try {
@@ -113,4 +116,30 @@ public class Cliente {
 		this.paqueteMsj.setName(nombre);
 		
 	}
+	
+	
+    public void run() {
+        try {
+        	while (true) {
+        		Object objeto = flujoEntrada.readObject();
+        		System.out.println("objeto recibido"+objeto);
+                if (objeto instanceof MensajeCliente) {
+                    
+                }else if (objeto instanceof HashMap) {
+                	System.out.println("HashMap"+objeto);
+                	ControladorCliente.getInstancia().actualizaLista( (HashMap) objeto);
+                }
+            }
+            
+        } catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {} 
+    }
+	
+	
+	
 }
