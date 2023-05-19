@@ -14,12 +14,13 @@ import java.util.Map;
 import java.util.HashMap;
 
 import controlador.ControladorCliente;
+import controlador.ControladorServidor;
 import modelo.MensajeCliente;
 import modelo.Usuario;
 
 public class Servidor implements Runnable {
     private static Servidor instancia;
-    private static ControladorCliente controlador;
+    private static ControladorServidor controlador;
 
     private ServerSocket servidor;
     private Usuario user;

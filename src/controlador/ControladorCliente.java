@@ -20,6 +20,7 @@ import vista.Bienvenido;
 import vista.Chat;
 import vista.Inicio;
 import vista.SalaDeEspera;
+import vista.SalaDeEsperaCliente;
 
 public class ControladorCliente implements ActionListener, Runnable {
 
@@ -74,14 +75,17 @@ public class ControladorCliente implements ActionListener, Runnable {
 			} catch (UnknownHostException e1) {
 				e1.printStackTrace();
 			}
-        	Usuario.getInstance().setPuerto( Integer.parseInt(ventana.getTextFieldTuPuerto().getText()));
+        	Usuario.getInstance().setPuerto( Integer.parseInt(ventana.getTextField_1().getText()));
         	
         	this.cliente.getInstancia().setDatos(Usuario.getInstance().getIp(),Usuario.getInstance().getPuerto(),Usuario.getInstance().getNombre());
         	
-        	//DATOS DEL USUARIO AL QUE ME CONECTO
-        	String ip = ventana.getTextField().getText();
-        	int puerto = Integer.parseInt( ventana.getTextField_1().getText() );
+        	//DATOS DEL SERVIDOR
+        	String ip = ventana.getTextFieldIPSV().getText();
+        	int puerto = Integer.parseInt( ventana.getTextFieldPuertoSV().getText());
         	System.out.println("me conecto a:"+ip+ "puerto"+puerto);
+        	
+        	System.out.println("soy"+Usuario.getInstance().getNombre()+Usuario.getInstance().getIp()+Usuario.getInstance().getPuerto());
+        	System.out.println("Datos del servier"+ip+" puerto "+puerto);
         	
         	
         	
@@ -105,8 +109,9 @@ public class ControladorCliente implements ActionListener, Runnable {
     
     public void ventanaEspera() {
     	this.vista.cerrar();
-    	this.setVista(new SalaDeEspera());
+    	this.setVista(new SalaDeEsperaCliente());
     }
+    
     
     public void ventanaChat() {
     	this.vista.cerrar();

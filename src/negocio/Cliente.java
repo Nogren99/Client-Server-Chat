@@ -49,7 +49,7 @@ public class Cliente {
             System.out.println("5");
             paqueteDatos.writeObject(datos); //envio los datos che
             System.out.println("estoy por abrir la ventana xq hace calor");*/
-            ControladorCliente.getInstancia().ventanaChat();
+            ControladorCliente.getInstancia().ventanaEspera();//ventana sala de espera con listita
         } catch (IOException e) {
             System.out.println(e.getMessage());
         }

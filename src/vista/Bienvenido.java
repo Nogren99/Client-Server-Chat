@@ -58,8 +58,8 @@ public class Bienvenido extends JFrame implements Ivista {
 	private JPanel panel_27;
 	private JLabel lblNewLabel_5;
 	private JLabel lblNewLabel_6;
-	private JTextField textFieldTuIP;
-	private JTextField textFieldTuPuerto;
+	private JTextField textFieldIPSV;
+	private JTextField textFieldPuertoSV;
 
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
@@ -146,21 +146,21 @@ public class Bienvenido extends JFrame implements Ivista {
 		this.panel_4.setBackground(new Color(195, 222, 214));
 		this.panel_2.add(this.panel_4);
 		
-		lblNewLabel_4 = new JLabel("Ingresa tu nombre");
-		panel_4.add(lblNewLabel_4);
-		
-		textField_2 = new JTextField();
-		panel_4.add(textField_2);
-		textField_2.setColumns(10);
+		this.lblNewLabel = new JLabel("Mis datos:");
+		panel_4.add(lblNewLabel);
+		this.lblNewLabel.setFont(new Font("Segoe UI Historic", Font.PLAIN, 18));
 		
 		this.panel_5 = new JPanel();
 		this.panel_5.setBackground(new Color(195, 222, 214));
 		this.panel_2.add(this.panel_5);
 		this.panel_5.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
 		
-		this.lblNewLabel = new JLabel("Conectarse a:");
-		panel_5.add(lblNewLabel);
-		this.lblNewLabel.setFont(new Font("Segoe UI Historic", Font.PLAIN, 18));
+		lblNewLabel_4 = new JLabel("Ingresa tu nombre");
+		panel_5.add(lblNewLabel_4);
+		
+		textField_2 = new JTextField();
+		panel_5.add(textField_2);
+		textField_2.setColumns(10);
 		
 		this.panel_6 = new JPanel();
 		this.panel_6.setBackground(new Color(195, 222, 214));
@@ -217,32 +217,32 @@ public class Bienvenido extends JFrame implements Ivista {
 		this.panel_21.add(this.panel_26);
 		this.panel_26.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
 		
-		this.lblNewLabel_5 = new JLabel("Tu IP");
-		this.panel_26.add(this.lblNewLabel_5);
-		
-		this.textFieldTuIP = new JTextField();
-		this.panel_26.add(this.textFieldTuIP);
-		this.textFieldTuIP.setColumns(10);
-		
 		this.panel_27 = new JPanel();
 		this.panel_27.setBackground(new Color(195, 222, 214));
 		this.panel_21.add(this.panel_27);
-		
-		this.lblNewLabel_6 = new JLabel("Tu puerto");
-		this.panel_27.add(this.lblNewLabel_6);
-		
-		this.textFieldTuPuerto = new JTextField();
-		this.panel_27.add(this.textFieldTuPuerto);
-		this.textFieldTuPuerto.setColumns(10);
 		
 		this.panel_22 = new JPanel();
 		this.panel_22.setBackground(new Color(195, 222, 214));
 		this.panel_22.setForeground(new Color(195, 222, 214));
 		this.panel_3.add(this.panel_22);
 		
+		this.lblNewLabel_5 = new JLabel("IP SV");
+		panel_22.add(lblNewLabel_5);
+		
+		this.textFieldIPSV = new JTextField();
+		panel_22.add(textFieldIPSV);
+		this.textFieldIPSV.setColumns(10);
+		
 		this.panel_24 = new JPanel();
 		this.panel_24.setBackground(new Color(195, 222, 214));
 		this.panel_3.add(this.panel_24);
+		
+		this.lblNewLabel_6 = new JLabel("Puerto del SV");
+		panel_24.add(lblNewLabel_6);
+		
+		this.textFieldPuertoSV = new JTextField();
+		panel_24.add(textFieldPuertoSV);
+		this.textFieldPuertoSV.setColumns(10);
 		
 		this.panel_23 = new JPanel();
 		this.panel_23.setBackground(new Color(195, 222, 214));
@@ -287,12 +287,12 @@ public class Bienvenido extends JFrame implements Ivista {
 		
 	}
 
-	public JTextField getTextFieldTuIP() {
-		return textFieldTuIP;
+	public JTextField getTextFieldIPSV() {
+		return textFieldIPSV;
 	}
 
-	public JTextField getTextFieldTuPuerto() {
-		return textFieldTuPuerto;
+	public JTextField getTextFieldPuertoSV() {
+		return textFieldPuertoSV;
 	}
 	
 	

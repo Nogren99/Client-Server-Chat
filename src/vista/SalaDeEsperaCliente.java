@@ -5,111 +5,134 @@ import java.awt.EventQueue;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.JPasswordField;
 import javax.swing.border.EmptyBorder;
-import javax.swing.JLabel;
-import java.awt.FlowLayout;
+
+
 import java.awt.GridLayout;
+import java.awt.SystemColor;
 import java.awt.event.ActionListener;
-import java.awt.CardLayout;
+
+import javax.swing.JScrollPane;
+import javax.swing.JTextField;
+import javax.swing.JList;
+import java.awt.FlowLayout;
 import java.awt.Font;
-import java.awt.Color;
 
-public class SalaDeEsperaCliente extends JFrame implements Ivista {
+import javax.swing.JButton;
+import javax.swing.BoxLayout;
+import javax.swing.DefaultListModel;
 
+import java.awt.CardLayout;
+import java.awt.event.ActionEvent;
+
+public class SalaDeEsperaCliente extends JFrame implements Ivista { 
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
 	private JPanel panel;
-	private JPanel panel_1;
-	private JPanel panel_2;
-	private JPanel panel_3;
-	private JPanel panel_4;
-	private JPanel panel_5;
-	private JLabel lblNewLabel;
-	private JLabel lblNewLabel_1;
-	private JPanel panel_6;
+	private JButton btnAlta;
+	private JPanel panelAlta;
+	private JPanel panelBotones;
+	private JScrollPane scrollPane;
+	private JList<Object> list;
+	private DefaultListModel<Object> modeloLista;
+	private JPanel panelNorte;
+	private JPanel panelSur;
+	private JPanel panelOeste;
+	private JPanel panelEste;
+	private ActionListener actionListener;
 
-	/**
-	 * Launch the application.
-	 */
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					SalaDeEsperaCliente frame = new SalaDeEsperaCliente();
-					frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
 
-	/**
-	 * Create the frame.
-	 */
 	public SalaDeEsperaCliente() {
+		setTitle("Sala de Conexiones");
+		this.modeloLista = new DefaultListModel<Object>();
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 450, 300);
 		this.contentPane = new JPanel();
 		this.contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
+		this.contentPane.setLayout(new BorderLayout(0, 0));
 		setContentPane(this.contentPane);
-		this.contentPane.setLayout(new GridLayout(0, 3, 0, 0));
 		
 		this.panel = new JPanel();
-		this.panel.setBackground(new Color(195, 222, 214));
-		this.contentPane.add(this.panel);
+		this.contentPane.add(this.panel, BorderLayout.CENTER);
+		this.panel.setLayout(new BorderLayout(0, 0));
 		
-		this.panel_1 = new JPanel();
-		this.contentPane.add(this.panel_1);
-		this.panel_1.setLayout(new GridLayout(3, 1, 0, 0));
+		this.scrollPane = new JScrollPane();
+		this.panel.add(this.scrollPane, BorderLayout.CENTER);
 		
-		this.panel_3 = new JPanel();
-		this.panel_3.setBackground(new Color(195, 222, 214));
-		this.panel_1.add(this.panel_3);
+		this.list = new JList();
+		this.list.setModel(modeloLista);
+		this.scrollPane.setViewportView(this.list);
 		
-		this.panel_6 = new JPanel();
-		this.panel_6.setBackground(new Color(195, 222, 214));
-		this.panel_1.add(this.panel_6);
+		this.panelNorte = new JPanel();
+		this.panelNorte.setBackground(SystemColor.inactiveCaption);
+		this.panel.add(this.panelNorte, BorderLayout.NORTH);
 		
-		this.panel_4 = new JPanel();
-		this.panel_4.setBackground(new Color(195, 222, 214));
-		this.panel_6.add(this.panel_4);
-		this.panel_4.setLayout(new BorderLayout(0, 0));
+		this.panelSur = new JPanel();
+		this.panelSur.setBackground(SystemColor.inactiveCaption);
+		this.panel.add(this.panelSur, BorderLayout.SOUTH);
 		
-		this.lblNewLabel = new JLabel("Servidor");
-		this.lblNewLabel.setBackground(Color.GRAY);
-		this.lblNewLabel.setFont(new Font("Tahoma", Font.PLAIN, 26));
-		this.panel_4.add(this.lblNewLabel, BorderLayout.NORTH);
+		this.panelOeste = new JPanel();
+		this.panelOeste.setBackground(SystemColor.inactiveCaption);
+		this.panel.add(this.panelOeste, BorderLayout.WEST);
 		
-		this.lblNewLabel_1 = new JLabel("Abrido");
-		this.lblNewLabel_1.setBackground(new Color(195, 222, 214));
-		this.lblNewLabel_1.setFont(new Font("Tahoma", Font.PLAIN, 26));
-		this.panel_4.add(this.lblNewLabel_1);
+		this.panelEste = new JPanel();
+		this.panelEste.setBackground(SystemColor.inactiveCaption);
+		this.panel.add(this.panelEste, BorderLayout.EAST);
 		
-		this.panel_5 = new JPanel();
-		this.panel_5.setBackground(new Color(195, 222, 214));
-		this.panel_1.add(this.panel_5);
+		panelBotones = new JPanel();
+		this.panelBotones.setBackground(SystemColor.inactiveCaption);
+		this.contentPane.add(panelBotones, BorderLayout.SOUTH);
+		panelBotones.setLayout(new GridLayout(1, 3, 0, 0));
 		
-		this.panel_2 = new JPanel();
-		this.panel_2.setBackground(new Color(195, 222, 214));
-		this.contentPane.add(this.panel_2);
+		this.panelAlta = new JPanel();
+		this.panelAlta.setBackground(SystemColor.inactiveCaption);
+		panelBotones.add(this.panelAlta);
+		
+		this.btnAlta = new JButton("Conectar");
+		btnAlta.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+			}
+		});
+		this.btnAlta.setBackground(SystemColor.textHighlight);
+		this.btnAlta.setFont(new Font("Microsoft YaHei UI Light", Font.PLAIN, 12));
+		this.panelAlta.add(this.btnAlta);
 	}
 
 	@Override
 	public void cerrar() {
 		this.dispose();
-		
 	}
 
 	@Override
 	public void mostrar() {
 		this.setVisible(true);
-		
+	}
+
+	
+	
+	public JList<Object> getList() {
+		return list;
+	}
+
+	public DefaultListModel<Object> getModeloLista() {
+		return modeloLista;
 	}
 
 	@Override
 	public void setActionListener(ActionListener actionListener) {
-		// TODO Auto-generated method stub
-		
+		this.btnAlta.addActionListener(actionListener);
+		this.actionListener=actionListener;
 	}
+
+	public JButton getBtnAlta() {
+		return btnAlta;
+	}
+
+	
 
 }
