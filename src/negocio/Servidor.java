@@ -91,7 +91,42 @@ public class Servidor implements Runnable {
 
     // Clase interna para manejar las conexiones entrantes
 
-        private class EscucharCliente implements Runnable {
+        public static ControladorServidor getControlador() {
+		return controlador;
+	}
+
+	public Usuario getUser() {
+		return user;
+	}
+
+	public ServerSocket getSocketServer() {
+		return socketServer;
+	}
+
+	public PrintWriter getOut() {
+		return out;
+	}
+
+	public BufferedReader getIn() {
+		return in;
+	}
+
+	public InputStreamReader getInSocket() {
+		return inSocket;
+	}
+
+	public HashMap<String, Socket> getClientes() {
+		return clientes;
+	}
+
+	public HashMap<String, ObjectOutputStream> getFlujosSalida() {
+		return flujosSalida;
+	}
+
+
+
+
+		private class EscucharCliente implements Runnable {
             private Socket cliente;
             private ObjectInputStream flujoEntrada;
             private ObjectOutputStream flujoSalida;
@@ -114,12 +149,13 @@ public class Servidor implements Runnable {
                 	/**/
                 	 //enviar lista de clientes
                     ObjectOutputStream listaClientes = new ObjectOutputStream(cliente.getOutputStream());
-                    System.out.println("enviandooooooooo");
-                    listaClientes.writeObject(this.cliente);
+                    System.out.println("enviandooooooooo"+listaClientes +" this.cliente: "+Servidor.getInstancia().getClientes());
+                    listaClientes.writeObject(Servidor.getInstancia().getClientes());
                     System.out.println("enviandooooooooo");
                     listaClientes.flush();
                     System.out.println("enviandooooooooo");
                 	
+                    
                 	
                 	MensajeCliente msj = new MensajeCliente();
                 	msj =(MensajeCliente) flujoEntrada.readObject();

@@ -34,10 +34,10 @@ public class Cliente implements Runnable{
     	//esto asi el servidor conoce el puerto del cliente al que quiero conectarme y poder hacer el envio del mensaje
         try {
         	System.out.println("0");
-            socket = new Socket(host, 1);
+            this.socket = new Socket(host, 1);
             System.out.println("socket"+socket + "histo:"+host+"puerot"+puerto);
-            flujoSalida = new ObjectOutputStream(socket.getOutputStream());
-            flujoEntrada = new ObjectInputStream(socket.getInputStream());
+            this.flujoSalida = new ObjectOutputStream(socket.getOutputStream());
+            this.flujoEntrada = new ObjectInputStream(socket.getInputStream());
             System.out.println("2");
             /*
             ObjectOutputStream paqueteDatos = new ObjectOutputStream(socket.getOutputStream());
@@ -121,7 +121,21 @@ public class Cliente implements Runnable{
     public void run() {
         try {
         	while (true) {
-        		Object objeto = flujoEntrada.readObject();
+        		
+        		 //Socket servidor = ... // Establece la conexión con el servidor
+
+				// Obtiene el InputStream del socket del servidor
+				//InputStream inputStream = servidor.getInputStream();
+				
+				// Crea el ObjectInputStream utilizando el InputStream
+				//ObjectInputStream objectInputStream = new ObjectInputStream(servidor.getInputStream());
+				
+				// Lee el objeto del ObjectInputStream
+				//Socket clienteRecibido = (Socket) flujoEntrada.readObject();
+				
+				// Usa el objeto cliente recibido según sea necesario
+        		System.out.println(this.flujoEntrada.readObject());
+        		Object objeto = this.flujoEntrada.readObject();
         		System.out.println("objeto recibido"+objeto);
                 if (objeto instanceof MensajeCliente) {
                     
