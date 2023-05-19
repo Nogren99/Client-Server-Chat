@@ -3,6 +3,7 @@ package negocio;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
 import java.net.Socket;
@@ -14,8 +15,10 @@ import modelo.Usuario;
 public class Cliente {
 	private static Cliente instancia;
     private Socket socket;
-    private PrintWriter out;
-    private BufferedReader in;
+    private MensajeCliente paqueteMsj = new MensajeCliente();
+    private ObjectOutputStream flujoSalida;
+    private ObjectInputStream flujoEntrada;
+    private MensajeCliente paqueteRecibido;
     
 	public static Cliente getInstancia() {
 		if (instancia == null)
@@ -28,31 +31,64 @@ public class Cliente {
     	//out.println(objeto con datos)
     	//esto asi el servidor conoce el puerto del cliente al que quiero conectarme y poder hacer el envio del mensaje
         try {
-        	
-            socket = new Socket(host, puerto);
-            out = new PrintWriter(socket.getOutputStream(), true);
-            in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+        	System.out.println("0");
+            socket = new Socket(host, 1);
+            System.out.println("socket"+socket + "histo:"+host+"puerot"+puerto);
+            flujoSalida = new ObjectOutputStream(socket.getOutputStream());
+            flujoEntrada = new ObjectInputStream(socket.getInputStream());
+            System.out.println("2");
+            /*
             ObjectOutputStream paqueteDatos = new ObjectOutputStream(socket.getOutputStream());
+            System.out.println("3");
             MensajeCliente datos = new MensajeCliente();
+            System.out.println("4");
             datos.setIp(Usuario.getInstance().getIp());
             datos.setMsj(null);
             datos.setPuerto(Usuario.getInstance().getPuerto());
             datos.setName(Usuario.getInstance().getNombre());
+            System.out.println("5");
             paqueteDatos.writeObject(datos); //envio los datos che
+            System.out.println("estoy por abrir la ventana xq hace calor");*/
             ControladorCliente.getInstancia().ventanaChat();
         } catch (IOException e) {
-            // Manejar la excepción apropiadamente
+            System.out.println(e.getMessage());
         }
     }
 
     public void enviarMensaje(String mensaje) {
-        out.println(mensaje);
+    	this.paqueteMsj.setMsj(mensaje);
+        try {
+			this.flujoSalida = new ObjectOutputStream(socket.getOutputStream());
+			this.flujoSalida.writeObject(paqueteMsj);
+			flujoSalida.flush();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+        
+    }
+    
+    public void esperarConexion() {
+        try {
+            while (true) {
+                Object objeto = flujoEntrada.readObject();
+                if (objeto instanceof MensajeCliente) {
+                    MensajeCliente mensaje = (MensajeCliente) objeto;
+                    System.out.println("Mensaje recibido: " + mensaje.getMsj());
+                    // Procesar el mensaje recibido
+                }
+            }
+        } catch (IOException | ClassNotFoundException e) {
+            // Manejar la excepción apropiadamente
+        }
     }
 
-    public String recibirMensaje() {
+    public MensajeCliente recibirMensaje() {
         try {
-            return in.readLine();
-        } catch (IOException e) {
+        	this.flujoEntrada = new ObjectInputStream(socket.getInputStream());
+        	paqueteRecibido = (MensajeCliente) this.flujoEntrada.readObject();
+            return paqueteRecibido;
+        } catch (IOException | ClassNotFoundException e) {
             // Manejar la excepción apropiadamente
         }
         return null;
@@ -60,11 +96,21 @@ public class Cliente {
 
     public void desconectar() {
         try {
-            in.close();
-            out.close();
+            flujoEntrada.close();
+            flujoSalida.close();
             socket.close();
         } catch (IOException e) {
             // Manejar la excepción apropiadamente
         }
     }
+    
+
+
+
+	public void setDatos(String ip, int puerto, String nombre) {
+		this.paqueteMsj.setIp(ip);
+		this.paqueteMsj.setPuerto(puerto);
+		this.paqueteMsj.setName(nombre);
+		
+	}
 }

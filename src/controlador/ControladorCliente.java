@@ -8,6 +8,8 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
+
+import modelo.MensajeCliente;
 import modelo.Usuario;
 import negocio.Sistema;
 import negocio.Cliente;
@@ -29,6 +31,7 @@ public class ControladorCliente implements ActionListener, Runnable {
     private String msj;
     private static ControladorCliente instancia;
     private Thread comunicacion;
+    private MensajeCliente paquete;
     
     public void setMsj(String msj) {
 		this.msj = msj;
@@ -73,13 +76,18 @@ public class ControladorCliente implements ActionListener, Runnable {
 			}
         	Usuario.getInstance().setPuerto( Integer.parseInt(ventana.getTextFieldTuPuerto().getText()));
         	
+        	this.cliente.getInstancia().setDatos(Usuario.getInstance().getIp(),Usuario.getInstance().getPuerto(),Usuario.getInstance().getNombre());
+        	
         	//DATOS DEL USUARIO AL QUE ME CONECTO
         	String ip = ventana.getTextField().getText();
         	int puerto = Integer.parseInt( ventana.getTextField_1().getText() );
         	System.out.println("me conecto a:"+ip+ "puerto"+puerto);
         	
-        	//SOLICITO INICIAR CHAT
+        	
+        	
+        	//Conectar al servidor
         	this.cliente.conectar(ip, puerto);
+        	this.cliente.esperarConexion();
         	this.vista.cerrar();
         	
         //====VENTANA DE CHAT====
@@ -117,16 +125,16 @@ public class ControladorCliente implements ActionListener, Runnable {
 	public void run() {
 		Chat vista = (Chat) this.vista;
 		try {
-			while (!Servidor.getInstancia().getSocket().isInputShutdown() ){
-				String mensaje =  this.cliente.getInstancia().recibirMensaje();
+			while (true ){
+				MensajeCliente paquete =  this.cliente.getInstancia().recibirMensaje();
 				//Si el mensaje es null es debido a que el otro usuario cerro la comunicacion
-				if (mensaje==null) 
+				if (paquete.getMsj()==null) 
 	                break;
 				else {
 					vista.getTextArea().setEditable(true);
 					//System.out.println("mensaje de:"+Sistema.getInstancia().getIn().readLine());
-					System.out.println("el mensaje:"+mensaje);
-					vista.getTextArea().append("Tu contacto: "+mensaje+"\n");
+					System.out.println("el mensaje:"+paquete.getMsj());
+					vista.getTextArea().append("Tu contacto ( "+paquete.getName()+ " ) : "+paquete.getMsj()+"\n");
 					vista.getTextArea().setEditable(false);
 				}
 			}

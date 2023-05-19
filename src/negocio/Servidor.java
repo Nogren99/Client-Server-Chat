@@ -8,6 +8,10 @@ import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
 
 import controlador.ControladorCliente;
 import modelo.MensajeCliente;
@@ -24,9 +28,13 @@ public class Servidor implements Runnable {
     private PrintWriter out;
     private BufferedReader in;
     private InputStreamReader inSocket;
+    private Map<String, Socket> clientes;
+    private Map<String, ObjectOutputStream> flujosSalida;
 
     private Servidor() {
         user = Usuario.getInstance();
+        clientes = new HashMap<>();
+        flujosSalida = new HashMap<>();
     }
 
     public static Servidor getInstancia() {
@@ -43,16 +51,18 @@ public class Servidor implements Runnable {
     @Override
     public void run() {
         try {
-            System.out.println("Modo escucha activado.");
             this.socketServer = new ServerSocket(user.getPuerto());
+            System.out.println("Servidor iniciado. Puerto: " + user.getPuerto());
             controlador.getInstancia().ventanaEspera();
 
             while (true) {
-                System.out.println(user.getPuerto());
                 socket = socketServer.accept();
+                System.out.println("Nuevo cliente conectado: " + socket.getInetAddress().getHostAddress());
+
+                //ObjectOutputStream flujoSalida = new ObjectOutputStream(socket.getOutputStream());
 
                 // Crear un hilo para manejar la conexión entrante
-                Thread clientThread = new Thread(new ClientHandler(socket));
+                Thread clientThread = new Thread(new EscucharCliente(socket));
                 clientThread.start();
             }
 
@@ -60,59 +70,76 @@ public class Servidor implements Runnable {
             // Manejar la excepción apropiadamente
         }
     }
-
-    // Clase interna para manejar las conexiones entrantes
-    private class ClientHandler implements Runnable {
-        private Socket clientSocket;
-        private BufferedReader in;
-        private PrintWriter out;
-
-        public ClientHandler(Socket socket) {
-            this.clientSocket = socket;
-        }
-
-        @Override
-        public void run() {
+    
+    
+    
+    public void enviarObjetoACliente(String nombreCliente, Object objeto) {
+        if (flujosSalida.containsKey(nombreCliente)) {
             try {
-                // Configurar las entradas y salidas del cliente
-            	
-            	
-            	
-            	ObjectInputStream flujoEntrada = new ObjectInputStream(clientSocket.getInputStream());
-            	MensajeCliente paqueteMensaje = (MensajeCliente) flujoEntrada.readObject(); //espero que este metodo bloquee la ejecucion como el readline
-            	
-                InputStreamReader inSocket = new InputStreamReader(clientSocket.getInputStream());
-                in = new BufferedReader(inSocket);
-                //out = new PrintWriter(clientSocket.getOutputStream(), true);
-
-                Socket socketEnvio = new Socket(paqueteMensaje.getIp(),paqueteMensaje.getPuerto());
-                ObjectOutputStream paqueteEnvio = new ObjectOutputStream(socketEnvio.getOutputStream());
-                
-                paqueteEnvio.writeObject(paqueteMensaje);
-
-               // String clientName = in.readLine();
-                System.out.println("El nombre del cliente es: " + paqueteMensaje.getName());
-              //  out.println(user.getNombre());
-
-                // Obtener el nombre del otro cliente
-                //String otherClientName = controlador.obtenerNombreOtroCliente();
-
-                // Enviar el nombre del otro cliente al cliente actual
-                //out.println(otherClientName);
-
-                //controlador.ventanaChat();
-            } catch (IOException | ClassNotFoundException e) {
-                // Manejar la excepción apropiadamente
-            } finally {
-                // Cerrar las conexiones y liberar los recursos
-                try {
-                    in.close();
-                    out.close();
-                    clientSocket.close();
-                } catch (IOException e) {
-                    // Manejar la excepción apropiadamente
-                }
+                ObjectOutputStream flujoSalida = flujosSalida.get(nombreCliente);
+                flujoSalida.writeObject(objeto);
+                flujoSalida.flush();
+            } catch (IOException e) {
+                e.printStackTrace();
             }
         }
     }
+    
+    
+    
+
+    // Clase interna para manejar las conexiones entrantes
+
+        private class EscucharCliente implements Runnable {
+            private Socket cliente;
+            private ObjectInputStream flujoEntrada;
+            private ObjectOutputStream flujoSalida;
+            private String nombreCliente;
+
+            public EscucharCliente(Socket cliente) {
+                this.cliente = cliente;
+                try {
+                    flujoEntrada = new ObjectInputStream(cliente.getInputStream());
+                    flujoSalida = new ObjectOutputStream(cliente.getOutputStream());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void run() {
+                try {
+                    // El cliente debe enviar su nombre primero
+                	MensajeCliente msj = new MensajeCliente();
+                	msj =(MensajeCliente) flujoEntrada.readObject();
+                	System.out.println(msj);
+                	
+                    nombreCliente = msj.getName();
+                    clientes.put(nombreCliente, cliente);
+                    flujosSalida.put(nombreCliente, flujoSalida);
+
+                    while (true) {
+                        Object objeto = flujoEntrada.readObject();
+                        if (objeto instanceof MensajeCliente) {
+                        	MensajeCliente objetoMensaje = (MensajeCliente) objeto;
+                        	String destinatario = objetoMensaje.getName();
+                            if (clientes.containsKey(destinatario)) {
+                                Socket destinatarioSocket = clientes.get(destinatario);
+                                ObjectOutputStream destinatarioFlujoSalida = flujosSalida.get(destinatario);
+                                destinatarioFlujoSalida.writeObject(objetoMensaje);
+                                destinatarioFlujoSalida.flush();
+                            } else {
+                                // Manejar el caso en el que el destinatario no exista
+                                System.out.println("Destinatario no encontrado: " + destinatario);
+                            }
+                        }
+                    }
+                } catch (IOException | ClassNotFoundException e) {
+                    clientes.remove(nombreCliente);
+                    flujosSalida.remove(nombreCliente);
+                    System.out.println("Cliente desconectado: " + nombreCliente);
+                }
+            }
+        }
+   
 }
