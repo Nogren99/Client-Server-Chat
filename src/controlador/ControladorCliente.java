@@ -123,10 +123,8 @@ public class ControladorCliente implements ActionListener, Runnable {
     
     public void actualizaLista(HashMap clientes) {
     	SalaDeEsperaCliente ventana = (SalaDeEsperaCliente) this.vista;
+    	ventana.getModeloLista().clear();
     	
-    	for (int i=0; i<clientes.size() ;i++) {
-    		System.out.println("recibi esto:"+clientes);
-    	}
     	Iterator<Map.Entry<String, Integer>> iterator = clientes.entrySet().iterator();
 
         while (iterator.hasNext()) {
@@ -134,13 +132,12 @@ public class ControladorCliente implements ActionListener, Runnable {
             String nombre = entry.getKey();
             Integer puerto = entry.getValue();
             System.out.println("Cliente: " + nombre + ", Puerto: " + puerto);
-            ventana.getModeloLista().clear();
+            
         	ventana.getModeloLista().addElement(nombre);
-        	ventana.repaint();
+        	
         }
+        ventana.repaint();
     	
-    	
-    	 //si no adna usar iterador
     	
     }
     

@@ -152,8 +152,11 @@ public class Cliente implements Runnable{
                     Integer puerto = entry.getValue();
                     System.out.println("Cliente: " + nombre + ", Puerto: " + puerto);
                 }
+                
+                ControladorCliente.getInstancia().actualizaLista( (HashMap) clientesRecibidos);
         		
-        		
+                Thread.sleep(500);
+        		/*
         		System.out.println(this.flujoEntrada.readObject());
         		Object objeto = this.flujoEntrada.readObject();
         		System.out.println("objeto recibido"+objeto);
@@ -162,13 +165,16 @@ public class Cliente implements Runnable{
                 }else if (objeto instanceof HashMap) {
                 	System.out.println("HashMap"+objeto);
                 	ControladorCliente.getInstancia().actualizaLista( (HashMap) objeto);
-                }
+                }*/
             }
             
         } catch (ClassNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} finally {} 

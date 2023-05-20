@@ -60,10 +60,7 @@ public class Servidor implements Runnable {
                 socket = socketServer.accept();
                 
                 ObjectInputStream paquete = new ObjectInputStream(this.socket.getInputStream());
-                System.out.println("no anda");
-                
                 this.msj = (MensajeCliente) paquete.readObject();
-                System.out.println("no anda");
                 clientes.put(msj.getName(), msj.getPuerto() );
                 System.out.println("Nuevo cliente conectado: " + socket.getInetAddress().getHostAddress());
 
@@ -152,15 +149,13 @@ public class Servidor implements Runnable {
             @Override
             public void run() {
                 try {
-                    // El cliente debe enviar su nombre primero
-                	/**/
-                	 //enviar lista de clientes
+                	
+                	while (true) {
+                	
                     ObjectOutputStream listaClientes = new ObjectOutputStream(cliente.getOutputStream());
-                    System.out.println("enviandooooooooo"+listaClientes +" this.cliente: "+Servidor.getInstancia().getClientes());
                     listaClientes.writeObject(Servidor.getInstancia().getClientes());
-                    System.out.println("enviandooooooooo");
                     listaClientes.flush();
-                    System.out.println("enviandooooooooo");
+                    
                     
                     Iterator<Map.Entry<String, Integer>> iterator = clientes.entrySet().iterator();
 
@@ -170,39 +165,12 @@ public class Servidor implements Runnable {
                         Integer puerto = entry.getValue();
                         System.out.println("Cliente: " + nombre + ", Puerto: " + puerto);
                     }
-                	
+ 
                     
-                	
-                	MensajeCliente msj = new MensajeCliente();
-                	msj =(MensajeCliente) flujoEntrada.readObject();
-                	System.out.println(msj);
-                	
-                    nombreCliente = msj.getName();
-                    //clientes.put(nombreCliente, cliente);
-                    //flujosSalida.put(nombreCliente, flujoSalida);
-                    
-                   
-
-                    while (true) {
-                        Object objeto = flujoEntrada.readObject();
-                        if (objeto instanceof MensajeCliente) {
-                        	MensajeCliente objetoMensaje = (MensajeCliente) objeto;
-                        	String destinatario = objetoMensaje.getName();
-                            if (clientes.containsKey(destinatario)) {
-                               // Socket destinatarioSocket = clientes.get(destinatario);
-                                //ObjectOutputStream destinatarioFlujoSalida = flujosSalida.get(destinatario);
-                                //destinatarioFlujoSalida.writeObject(objetoMensaje);
-                                //destinatarioFlujoSalida.flush();
-                            } else {
-                                // Manejar el caso en el que el destinatario no exista
-                                System.out.println("Destinatario no encontrado: " + destinatario);
-                            }
-                        }
+                        
                     }
-                } catch (IOException | ClassNotFoundException e) {
-                    clientes.remove(nombreCliente);
-                    //flujosSalida.remove(nombreCliente);
-                    System.out.println("Cliente desconectado: " + nombreCliente);
+                } catch (IOException e) {
+
                 }
             }
         }
