@@ -52,18 +52,6 @@ public class Cliente implements Runnable{
             
             this.flujoSalida = new ObjectOutputStream(socket.getOutputStream());
             this.flujoEntrada = new ObjectInputStream(socket.getInputStream());
-            /*
-            ObjectOutputStream paqueteDatos = new ObjectOutputStream(socket.getOutputStream());
-            System.out.println("3");
-            MensajeCliente datos = new MensajeCliente();
-            System.out.println("4");
-            datos.setIp(Usuario.getInstance().getIp());
-            datos.setMsj(null);
-            datos.setPuerto(Usuario.getInstance().getPuerto());
-            datos.setName(Usuario.getInstance().getNombre());
-            System.out.println("5");
-            paqueteDatos.writeObject(datos); //envio los datos che
-            System.out.println("estoy por abrir la ventana xq hace calor");*/
             ControladorCliente.getInstancia().ventanaEspera();//ventana sala de espera con listita
         } catch (IOException e) {
             System.out.println(e.getMessage());
@@ -138,9 +126,12 @@ public class Cliente implements Runnable{
 				// Usa el objeto cliente recibido según sea necesario
         		System.out.println("hoolaaaaa");
         		ObjectInputStream hashMapInputStream = new ObjectInputStream(this.socket.getInputStream());
+        		
 
         		// Lee el objeto HashMap del segundo ObjectInputStream
         		HashMap<String, Integer> clientesRecibidos =  (HashMap<String, Integer>) hashMapInputStream.readObject();
+        		
+        		System.out.println("recibi esto"+hashMapInputStream);
 
         		System.out.println("barrilete cosmico el diego"+clientesRecibidos);
         		
@@ -155,26 +146,12 @@ public class Cliente implements Runnable{
                 
                 ControladorCliente.getInstancia().actualizaLista( (HashMap) clientesRecibidos);
         		
-                Thread.sleep(500);
-        		/*
-        		System.out.println(this.flujoEntrada.readObject());
-        		Object objeto = this.flujoEntrada.readObject();
-        		System.out.println("objeto recibido"+objeto);
-                if (objeto instanceof MensajeCliente) {
-                    
-                }else if (objeto instanceof HashMap) {
-                	System.out.println("HashMap"+objeto);
-                	ControladorCliente.getInstancia().actualizaLista( (HashMap) objeto);
-                }*/
             }
             
         } catch (ClassNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} finally {} 

@@ -68,7 +68,6 @@ public class Servidor implements Runnable {
                 this.secambio=true;
                 System.out.println("Nuevo cliente conectado: " + socket.getInetAddress().getHostAddress());
 
-                //ObjectOutputStream flujoSalida = new ObjectOutputStream(socket.getOutputStream());
                 
                 
 
@@ -175,18 +174,17 @@ public class Servidor implements Runnable {
 			                    listaClientes.writeObject(Servidor.getInstancia().getClientes());
 			                    listaClientes.flush();
 			                                                                
-			                    
-			                    
-			                    System.out.println("Seteamos secambió a falso");
-			                    Servidor.getInstancia().setSecambio(false);		
+ 	
 	                		}
-	                	Iterator<Map.Entry<String, Integer>> iterator = clientes.entrySet().iterator();
-			                    while (iterator.hasNext()) {
-			                        Map.Entry<String, Integer> entry = iterator.next();
-			                        String nombre = entry.getKey();
-			                        Integer puerto = entry.getValue();
-			                      //  System.out.println("Cliente: " + nombre + ", Puerto: " + puerto);
-			                    }		
+	                		System.out.println("Seteamos secambió a falso");
+		                    Servidor.getInstancia().setSecambio(false);	
+	                		Iterator<Map.Entry<String, Integer>> iterator = clientes.entrySet().iterator();
+		                    while (iterator.hasNext()) {
+		                        Map.Entry<String, Integer> entry = iterator.next();
+		                        String nombre = entry.getKey();
+		                        Integer puerto = entry.getValue();
+		                      //  System.out.println("Cliente: " + nombre + ", Puerto: " + puerto);
+		                    }		
                 	}
 	                	
 	                
