@@ -22,6 +22,8 @@ import modelo.Usuario;
 public class Servidor implements Runnable {
     private static Servidor instancia;
     private static ControladorServidor controlador;
+    
+    private boolean secambio=false;
 
 
     private Usuario user;
@@ -31,6 +33,7 @@ public class Servidor implements Runnable {
     private PrintWriter out;
     private BufferedReader in;
     private InputStreamReader inSocket;
+    private ArrayList<Socket> sockets = new ArrayList<Socket>();
     private HashMap<String, Integer> clientes; //Nombre / puerto
 
     private Servidor() {
@@ -58,10 +61,11 @@ public class Servidor implements Runnable {
 
             while (true) {
                 socket = socketServer.accept();
-                
+                sockets.add(socket);
                 ObjectInputStream paquete = new ObjectInputStream(this.socket.getInputStream());
                 this.msj = (MensajeCliente) paquete.readObject();
                 clientes.put(msj.getName(), msj.getPuerto() );
+                this.secambio=true;
                 System.out.println("Nuevo cliente conectado: " + socket.getInetAddress().getHostAddress());
 
                 //ObjectOutputStream flujoSalida = new ObjectOutputStream(socket.getOutputStream());
@@ -130,6 +134,19 @@ public class Servidor implements Runnable {
 
 
 
+		public boolean isSecambio() {
+		return secambio;
+	}
+
+	public void setSecambio(boolean secambio) {
+		this.secambio = secambio;
+	}
+
+
+
+
+
+
 		private class EscucharCliente implements Runnable {
             private Socket cliente;
             private ObjectInputStream flujoEntrada;
@@ -150,24 +167,30 @@ public class Servidor implements Runnable {
             public void run() {
                 try {
                 	
-                	while (true) {
-                	
-                    ObjectOutputStream listaClientes = new ObjectOutputStream(cliente.getOutputStream());
-                    listaClientes.writeObject(Servidor.getInstancia().getClientes());
-                    listaClientes.flush();
-                    
-                    
-                    Iterator<Map.Entry<String, Integer>> iterator = clientes.entrySet().iterator();
-
-                    while (iterator.hasNext()) {
-                        Map.Entry<String, Integer> entry = iterator.next();
-                        String nombre = entry.getKey();
-                        Integer puerto = entry.getValue();
-                        System.out.println("Cliente: " + nombre + ", Puerto: " + puerto);
-                    }
- 
-                    
-                        
+                	while (true) {		
+	                	if (Servidor.getInstancia().isSecambio()) {
+	                		for (int k=0; k < sockets.size() ; k++) {
+	                			System.out.println("La lista fue cambiada, actualizando...");
+			                    ObjectOutputStream listaClientes = new ObjectOutputStream(sockets.get(k).getOutputStream());
+			                    listaClientes.writeObject(Servidor.getInstancia().getClientes());
+			                    listaClientes.flush();
+			                                                                
+			                    
+			                    
+			                    System.out.println("Seteamos secambió a falso");
+			                    Servidor.getInstancia().setSecambio(false);		
+	                		}
+	                	Iterator<Map.Entry<String, Integer>> iterator = clientes.entrySet().iterator();
+			                    while (iterator.hasNext()) {
+			                        Map.Entry<String, Integer> entry = iterator.next();
+			                        String nombre = entry.getKey();
+			                        Integer puerto = entry.getValue();
+			                      //  System.out.println("Cliente: " + nombre + ", Puerto: " + puerto);
+			                    }		
+                	}
+	                	
+	                
+	                	
                     }
                 } catch (IOException e) {
 

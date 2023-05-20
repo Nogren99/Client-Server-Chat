@@ -126,7 +126,7 @@ public class ControladorCliente implements ActionListener, Runnable {
     	ventana.getModeloLista().clear();
     	
     	Iterator<Map.Entry<String, Integer>> iterator = clientes.entrySet().iterator();
-
+    	System.out.println("Entramos a Actualiza lista!! ");
         while (iterator.hasNext()) {
             Map.Entry<String, Integer> entry = iterator.next();
             String nombre = entry.getKey();

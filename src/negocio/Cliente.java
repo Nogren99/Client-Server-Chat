@@ -142,7 +142,7 @@ public class Cliente implements Runnable{
         		// Lee el objeto HashMap del segundo ObjectInputStream
         		HashMap<String, Integer> clientesRecibidos =  (HashMap<String, Integer>) hashMapInputStream.readObject();
 
-        		System.out.println("barrilete cosmico"+clientesRecibidos);
+        		System.out.println("barrilete cosmico el diego"+clientesRecibidos);
         		
                 Iterator<Map.Entry<String, Integer>> iterator = clientesRecibidos.entrySet().iterator();
 
