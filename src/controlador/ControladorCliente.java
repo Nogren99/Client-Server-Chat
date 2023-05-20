@@ -10,6 +10,7 @@ import java.net.UnknownHostException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
@@ -126,20 +127,21 @@ public class ControladorCliente implements ActionListener, Runnable {
     	for (int i=0; i<clientes.size() ;i++) {
     		System.out.println("recibi esto:"+clientes);
     	}
-    	Iterator<String> iterator = clientes.keySet().iterator();
+    	Iterator<Map.Entry<String, Integer>> iterator = clientes.entrySet().iterator();
+
+        while (iterator.hasNext()) {
+            Map.Entry<String, Integer> entry = iterator.next();
+            String nombre = entry.getKey();
+            Integer puerto = entry.getValue();
+            System.out.println("Cliente: " + nombre + ", Puerto: " + puerto);
+            ventana.getModeloLista().clear();
+        	ventana.getModeloLista().addElement(nombre);
+        	ventana.repaint();
+        }
     	
-    	while (iterator.hasNext()) {
-    	    String clave = iterator.next();
-    	    Socket valor = (Socket) clientes.get(clave);
-    	    
-    	    // Haz algo con la clave y el valor del elemento actual
-    	    System.out.println("Clave: " + clave + ", Valor: " + valor);
-    	}
     	
+    	 //si no adna usar iterador
     	
-    	ventana.getModeloLista().clear();
-    	ventana.getModeloLista().addAll((Collection<? extends Object>) clientes); //si no adna usar iterador
-    	ventana.repaint();
     }
     
     

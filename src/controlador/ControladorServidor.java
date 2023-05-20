@@ -122,26 +122,10 @@ public class ControladorServidor implements ActionListener, Runnable {
 
 	@Override
 	public void run() {
-		Chat vista = (Chat) this.vista;
-		try {
-			while (!Servidor.getInstancia().getSocket().isInputShutdown() ){
-				String mensaje =  this.sistema.recibirMensaje();
-				//Si el mensaje es null es debido a que el otro usuario cerro la comunicacion
-				if (mensaje==null) 
-	                break;
-				else {
-					vista.getTextArea().setEditable(true);
-					//System.out.println("mensaje de:"+Sistema.getInstancia().getIn().readLine());
-					System.out.println("el mensaje:"+mensaje);
-					vista.getTextArea().append("Tu contacto: "+mensaje+"\n");
-					vista.getTextArea().setEditable(false);
-				}
-			}
-			this.vista.cerrar();
-			this.cerrarVentana();
-		}
-		finally {
-		}
+		// TODO Auto-generated method stub
+		
 	}
+
+	
 	
 }

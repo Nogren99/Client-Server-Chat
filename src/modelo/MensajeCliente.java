@@ -1,6 +1,8 @@
 package modelo;
 
-public class MensajeCliente {
+import java.io.Serializable;
+
+public class MensajeCliente implements Serializable{
 	private String name;
 	private String msj;
 	private String ip;

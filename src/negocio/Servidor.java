@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.Iterator;
 
 import controlador.ControladorCliente;
 import controlador.ControladorServidor;
@@ -24,18 +25,17 @@ public class Servidor implements Runnable {
 
 
     private Usuario user;
+    private MensajeCliente msj;
     private ServerSocket socketServer;
     private Socket socket;
     private PrintWriter out;
     private BufferedReader in;
     private InputStreamReader inSocket;
-    private HashMap<String, Socket> clientes;
-    private HashMap<String, ObjectOutputStream> flujosSalida;
+    private HashMap<String, Integer> clientes; //Nombre / puerto
 
     private Servidor() {
         user = Usuario.getInstance();
         clientes = new HashMap<>();
-        flujosSalida = new HashMap<>();
     }
 
     public static Servidor getInstancia() {
@@ -58,22 +58,31 @@ public class Servidor implements Runnable {
 
             while (true) {
                 socket = socketServer.accept();
+                
+                ObjectInputStream paquete = new ObjectInputStream(this.socket.getInputStream());
+                System.out.println("no anda");
+                
+                this.msj = (MensajeCliente) paquete.readObject();
+                System.out.println("no anda");
+                clientes.put(msj.getName(), msj.getPuerto() );
                 System.out.println("Nuevo cliente conectado: " + socket.getInetAddress().getHostAddress());
 
                 //ObjectOutputStream flujoSalida = new ObjectOutputStream(socket.getOutputStream());
+                
+                
 
                 // Crear un hilo para manejar la conexión entrante
                 Thread clientThread = new Thread(new EscucharCliente(socket));
                 clientThread.start();
             }
 
-        } catch (IOException e) {
+        } catch (IOException | ClassNotFoundException e) {
             // Manejar la excepción apropiadamente
         }
     }
     
     
-    
+    /*
     public void enviarObjetoACliente(String nombreCliente, Object objeto) {
         if (flujosSalida.containsKey(nombreCliente)) {
             try {
@@ -84,7 +93,7 @@ public class Servidor implements Runnable {
                 e.printStackTrace();
             }
         }
-    }
+    }*/
     
     
     
@@ -115,13 +124,11 @@ public class Servidor implements Runnable {
 		return inSocket;
 	}
 
-	public HashMap<String, Socket> getClientes() {
+	public HashMap<String, Integer> getClientes() {
 		return clientes;
 	}
 
-	public HashMap<String, ObjectOutputStream> getFlujosSalida() {
-		return flujosSalida;
-	}
+
 
 
 
@@ -154,6 +161,15 @@ public class Servidor implements Runnable {
                     System.out.println("enviandooooooooo");
                     listaClientes.flush();
                     System.out.println("enviandooooooooo");
+                    
+                    Iterator<Map.Entry<String, Integer>> iterator = clientes.entrySet().iterator();
+
+                    while (iterator.hasNext()) {
+                        Map.Entry<String, Integer> entry = iterator.next();
+                        String nombre = entry.getKey();
+                        Integer puerto = entry.getValue();
+                        System.out.println("Cliente: " + nombre + ", Puerto: " + puerto);
+                    }
                 	
                     
                 	
@@ -162,8 +178,8 @@ public class Servidor implements Runnable {
                 	System.out.println(msj);
                 	
                     nombreCliente = msj.getName();
-                    clientes.put(nombreCliente, cliente);
-                    flujosSalida.put(nombreCliente, flujoSalida);
+                    //clientes.put(nombreCliente, cliente);
+                    //flujosSalida.put(nombreCliente, flujoSalida);
                     
                    
 
@@ -173,10 +189,10 @@ public class Servidor implements Runnable {
                         	MensajeCliente objetoMensaje = (MensajeCliente) objeto;
                         	String destinatario = objetoMensaje.getName();
                             if (clientes.containsKey(destinatario)) {
-                                Socket destinatarioSocket = clientes.get(destinatario);
-                                ObjectOutputStream destinatarioFlujoSalida = flujosSalida.get(destinatario);
-                                destinatarioFlujoSalida.writeObject(objetoMensaje);
-                                destinatarioFlujoSalida.flush();
+                               // Socket destinatarioSocket = clientes.get(destinatario);
+                                //ObjectOutputStream destinatarioFlujoSalida = flujosSalida.get(destinatario);
+                                //destinatarioFlujoSalida.writeObject(objetoMensaje);
+                                //destinatarioFlujoSalida.flush();
                             } else {
                                 // Manejar el caso en el que el destinatario no exista
                                 System.out.println("Destinatario no encontrado: " + destinatario);
@@ -185,7 +201,7 @@ public class Servidor implements Runnable {
                     }
                 } catch (IOException | ClassNotFoundException e) {
                     clientes.remove(nombreCliente);
-                    flujosSalida.remove(nombreCliente);
+                    //flujosSalida.remove(nombreCliente);
                     System.out.println("Cliente desconectado: " + nombreCliente);
                 }
             }

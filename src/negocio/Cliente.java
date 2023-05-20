@@ -8,6 +8,7 @@ import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 import controlador.ControladorCliente;
@@ -36,9 +37,21 @@ public class Cliente implements Runnable{
         	System.out.println("0");
             this.socket = new Socket(host, 1);
             System.out.println("socket"+socket + "histo:"+host+"puerot"+puerto);
+            //this.flujoSalida = new ObjectOutputStream(socket.getOutputStream());
+            //this.flujoEntrada = new ObjectInputStream(socket.getInputStream());
+            System.out.println("2");
+            
+            ObjectOutputStream paqueteDatos = new ObjectOutputStream(socket.getOutputStream());
+            MensajeCliente datos = new MensajeCliente();
+            datos.setIp(Usuario.getInstance().getIp());
+            datos.setMsj(null);
+            datos.setPuerto(Usuario.getInstance().getPuerto());
+            datos.setName(Usuario.getInstance().getNombre());
+            paqueteDatos.writeObject(datos);
+            paqueteDatos.flush();
+            
             this.flujoSalida = new ObjectOutputStream(socket.getOutputStream());
             this.flujoEntrada = new ObjectInputStream(socket.getInputStream());
-            System.out.println("2");
             /*
             ObjectOutputStream paqueteDatos = new ObjectOutputStream(socket.getOutputStream());
             System.out.println("3");
@@ -122,18 +135,25 @@ public class Cliente implements Runnable{
         try {
         	while (true) {
         		
-        		 //Socket servidor = ... // Establece la conexión con el servidor
-
-				// Obtiene el InputStream del socket del servidor
-				//InputStream inputStream = servidor.getInputStream();
-				
-				// Crea el ObjectInputStream utilizando el InputStream
-				//ObjectInputStream objectInputStream = new ObjectInputStream(servidor.getInputStream());
-				
-				// Lee el objeto del ObjectInputStream
-				//Socket clienteRecibido = (Socket) flujoEntrada.readObject();
-				
 				// Usa el objeto cliente recibido según sea necesario
+        		System.out.println("hoolaaaaa");
+        		ObjectInputStream hashMapInputStream = new ObjectInputStream(this.socket.getInputStream());
+
+        		// Lee el objeto HashMap del segundo ObjectInputStream
+        		HashMap<String, Integer> clientesRecibidos =  (HashMap<String, Integer>) hashMapInputStream.readObject();
+
+        		System.out.println("barrilete cosmico"+clientesRecibidos);
+        		
+                Iterator<Map.Entry<String, Integer>> iterator = clientesRecibidos.entrySet().iterator();
+
+                while (iterator.hasNext()) {
+                    Map.Entry<String, Integer> entry = iterator.next();
+                    String nombre = entry.getKey();
+                    Integer puerto = entry.getValue();
+                    System.out.println("Cliente: " + nombre + ", Puerto: " + puerto);
+                }
+        		
+        		
         		System.out.println(this.flujoEntrada.readObject());
         		Object objeto = this.flujoEntrada.readObject();
         		System.out.println("objeto recibido"+objeto);
