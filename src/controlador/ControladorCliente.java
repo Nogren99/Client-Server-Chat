@@ -110,6 +110,19 @@ public class ControladorCliente implements ActionListener, Runnable {
 			    this.cliente.getInstancia().enviarMensaje(msj);
 			    ventana.getTextArea().append(Usuario.getInstance().getNombre()+" : " +msj+"\n");
 			}
+        } else if(comando.equalsIgnoreCase("Conectar")) {
+        	SalaDeEsperaCliente vistaSeleccion = (SalaDeEsperaCliente) this.vista;
+        	//anular boton sin seleccion
+        	String nombre = (String) vistaSeleccion.getList().getSelectedValue();
+        	System.out.println("Nombre seleccionado: "+ nombre);
+            this.vista.cerrar();
+            
+            Servidor.getInstancia().solicitudChat(nombre, Usuario.getInstance().getNombre());
+            
+            /*this.setVista(new Chat());
+            Chat ventana = (Chat) this.vista; */
+
+
         }
     }
     

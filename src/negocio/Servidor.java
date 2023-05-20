@@ -9,6 +9,7 @@ import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
@@ -17,6 +18,7 @@ import java.util.Iterator;
 import controlador.ControladorCliente;
 import controlador.ControladorServidor;
 import modelo.MensajeCliente;
+import modelo.SolicitudMensaje;
 import modelo.Usuario;
 
 public class Servidor implements Runnable {
@@ -24,7 +26,7 @@ public class Servidor implements Runnable {
     private static ControladorServidor controlador;
     
     private boolean secambio=false;
-
+    private Socket socketSolicitante;
 
     private Usuario user;
     private MensajeCliente msj;
@@ -48,6 +50,10 @@ public class Servidor implements Runnable {
         return instancia;
     }
     
+    public void addCliente(String nombre, int puerto) {
+    	this.clientes.put(nombre, puerto);
+    }
+    
 	public Socket getSocket() {
 		return socket;
 	}
@@ -63,17 +69,22 @@ public class Servidor implements Runnable {
                 socket = socketServer.accept();
                 sockets.add(socket);
                 ObjectInputStream paquete = new ObjectInputStream(this.socket.getInputStream());
-                this.msj = (MensajeCliente) paquete.readObject();
-                clientes.put(msj.getName(), msj.getPuerto() );
-                this.secambio=true;
-                System.out.println("Nuevo cliente conectado: " + socket.getInetAddress().getHostAddress());
-
-                
-                
-
-                // Crear un hilo para manejar la conexión entrante
-                Thread clientThread = new Thread(new EscucharCliente(socket));
-                clientThread.start();
+                Object object = paquete.readObject();
+              //  this.msj = (MensajeCliente) paquete.readObject();
+                if (object instanceof MensajeCliente) {    //hacer otro objeto despues para que lea los datos
+                	this.msj = (MensajeCliente) object;
+                	Servidor.getInstancia().addCliente(msj.getName(), msj.getPuerto());
+	               // this.clientes.put(msj.getName(), msj.getPuerto() );
+	                this.secambio=true;
+	                System.out.println("Nuevo cliente conectado: " + socket.getInetAddress().getHostAddress());
+	                // Crear un hilo para manejar la conexión entrante
+	                Thread clientThread = new Thread(new EscucharCliente(socket));
+	                clientThread.start();
+                } else if (object instanceof Boolean) {
+                	ObjectOutputStream salidaConfirmacion = new ObjectOutputStream(this.socketSolicitante.getOutputStream());
+                	boolean rta = (boolean) object;
+                	salidaConfirmacion.writeObject(rta);
+                }
             }
 
         } catch (IOException | ClassNotFoundException e) {
@@ -81,6 +92,29 @@ public class Servidor implements Runnable {
         }
     }
     
+    
+    public void solicitudChat(String nombre, String nombrePropio) {
+    	System.out.println(Arrays.asList(clientes));
+    	System.out.println(this.clientes.get(nombre));
+    	int puerto = this.clientes.get(nombre);
+    	int i=0;
+    	while (i<sockets.size() && sockets.get(i).getPort()!=puerto) {
+    		System.out.println("Puerto numero "+ i + "  :" +puerto);
+    		i++;
+    	}
+    	
+    	this.socketSolicitante= sockets.get(i); //cambiar esto luego
+    	
+    	try {
+			ObjectOutputStream flujoSalida = new ObjectOutputStream(sockets.get(i).getOutputStream());
+			flujoSalida.writeObject(new SolicitudMensaje(nombrePropio)); //cambiar 
+			System.out.println("Solicitud enviada!");
+		} catch (IOException e) {
+			
+		}
+    	
+    	
+    }
     
     /*
     public void enviarObjetoACliente(String nombreCliente, Object objeto) {

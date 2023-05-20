@@ -11,8 +11,11 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import javax.swing.JOptionPane;
+
 import controlador.ControladorCliente;
 import modelo.MensajeCliente;
+import modelo.SolicitudMensaje;
 import modelo.Usuario;
 
 public class Cliente implements Runnable{
@@ -129,22 +132,43 @@ public class Cliente implements Runnable{
         		
 
         		// Lee el objeto HashMap del segundo ObjectInputStream
-        		HashMap<String, Integer> clientesRecibidos =  (HashMap<String, Integer>) hashMapInputStream.readObject();
+        		Object object =   hashMapInputStream.readObject();
         		
-        		System.out.println("recibi esto"+hashMapInputStream);
-
-        		System.out.println("barrilete cosmico el diego"+clientesRecibidos);
+        		if (object.getClass()==HashMap.class) {
+        			HashMap<String, Integer> clientesRecibidos = (HashMap<String, Integer>) object;
         		
-                Iterator<Map.Entry<String, Integer>> iterator = clientesRecibidos.entrySet().iterator();
-
-                while (iterator.hasNext()) {
-                    Map.Entry<String, Integer> entry = iterator.next();
-                    String nombre = entry.getKey();
-                    Integer puerto = entry.getValue();
-                    System.out.println("Cliente: " + nombre + ", Puerto: " + puerto);
-                }
-                
-                ControladorCliente.getInstancia().actualizaLista( (HashMap) clientesRecibidos);
+	        		System.out.println("recibi esto"+hashMapInputStream);
+	
+	        		System.out.println("barrilete cosmico el diego"+clientesRecibidos);
+	        		
+	                Iterator<Map.Entry<String, Integer>> iterator = clientesRecibidos.entrySet().iterator();
+	
+	                while (iterator.hasNext()) {
+	                    Map.Entry<String, Integer> entry = iterator.next();
+	                    String nombre = entry.getKey();
+	                    Integer puerto = entry.getValue();
+	                    System.out.println("Cliente: " + nombre + ", Puerto: " + puerto);
+	                }
+	                
+	                ControladorCliente.getInstancia().actualizaLista( (HashMap) clientesRecibidos);
+        		} else if (object.getClass()==SolicitudMensaje.class) {
+        			SolicitudMensaje solicitud = (SolicitudMensaje) object;
+        			ObjectOutputStream flujoSalida = new ObjectOutputStream(this.socket.getOutputStream());
+        			int dialogButton = JOptionPane.showConfirmDialog (null, solicitud.getNombre() + " quiere iniciar una conversación contigo. ¿Aceptar?","WARNING", 0); //0 es si, 1 es no
+        			if (dialogButton ==0) { // si
+        				flujoSalida.writeObject(true); //cambiar        				
+        				ControladorCliente.getInstancia().ventanaChat(); // abro ventana chat
+        			} else { // no
+        				flujoSalida.writeObject(false);
+        			}
+        		} else if (object instanceof Boolean) {
+        			boolean bool = (boolean) object;
+        			if (bool) {
+        				ControladorCliente.getInstancia().ventanaChat();
+        			} else {
+        				JOptionPane.showMessageDialog(null, "Tu solicitud ha sido rechazada :(");
+        			}
+        		}
         		
             }
             
