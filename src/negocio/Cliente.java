@@ -59,7 +59,7 @@ public class Cliente implements Runnable{
             paqueteDatos.writeObject(datos);
             paqueteDatos.flush();
             
-            this.flujoSalida = new ObjectOutputStream(socket.getOutputStream());
+            //this.flujoSalida = new ObjectOutputStream(socket.getOutputStream());
             System.out.println("SALIDITA1 "+flujoSalida);
             this.flujoEntrada = new ObjectInputStream(socket.getInputStream());
             System.out.println("3");

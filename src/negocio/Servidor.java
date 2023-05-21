@@ -127,6 +127,7 @@ public class Servidor implements Runnable {
                 
                 	//}
                       else if (object instanceof SolicitudMensaje) {
+                    	  // nombre del usuario al que le escribo ----- nombre mio
                     	System.out.println("RECIBI SOLICITUD!!!! :O");
                     	SolicitudMensaje soli = (SolicitudMensaje) object;
                     	System.out.println(Arrays.asList(clientes));
@@ -135,8 +136,10 @@ public class Servidor implements Runnable {
                     	int puerto = Servidor.getInstancia().getClientes().get(soli.getNombre());
                     	int i=0;
                     	while (i<sockets.size() && sockets.get(i).getPort()!=puerto) {
-                    		System.out.println("Puerto numero "+ i + "  :" +puerto);
+                    		System.out.println("Sochet numero "+ i + " Puerto :" +sockets.get(i).getLocalPort());
                     		i++;
+                    		//soli (nombre q busco)
+                    		// 
                     	}
                     	
                     	socketSolicitante= sockets.get(i); //cambiar esto luego
