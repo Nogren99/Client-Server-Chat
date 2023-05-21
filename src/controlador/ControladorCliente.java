@@ -115,7 +115,7 @@ public class ControladorCliente implements ActionListener, Runnable {
         	//anular boton sin seleccion
         	String nombre = (String) vistaSeleccion.getList().getSelectedValue();
         	System.out.println("Nombre seleccionado: "+ nombre);
-            this.vista.cerrar();
+            
             
             Cliente.getInstancia().solicitudChat(nombre, Usuario.getInstance().getNombre());
             

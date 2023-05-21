@@ -25,6 +25,7 @@ public class Cliente implements Runnable{
     private ObjectOutputStream flujoSalida;
     private ObjectInputStream flujoEntrada;
     private MensajeCliente paqueteRecibido;
+    ObjectOutputStream paqueteDatos;
     
 	public static Cliente getInstancia() {
 		if (instancia == null)
@@ -39,7 +40,7 @@ public class Cliente implements Runnable{
         try {
         	System.out.println("0");
             this.socket = new Socket(host, 1);
-            System.out.println("socket "+socket + "histo: "+host+"puerot "+puerto);
+            System.out.println("socket "+socket + "histo: "+host+" puerot "+puerto);
             
             
            // this.flujoSalida = new ObjectOutputStream(socket.getOutputStream());
@@ -49,7 +50,7 @@ public class Cliente implements Runnable{
             
             System.out.println("2");
             
-            ObjectOutputStream paqueteDatos = new ObjectOutputStream(socket.getOutputStream());
+            paqueteDatos = new ObjectOutputStream(socket.getOutputStream());
             MensajeCliente datos = new MensajeCliente();
             datos.setIp(Usuario.getInstance().getIp());
             datos.setMsj(null);
@@ -59,7 +60,9 @@ public class Cliente implements Runnable{
             paqueteDatos.flush();
             
             this.flujoSalida = new ObjectOutputStream(socket.getOutputStream());
+            System.out.println("SALIDITA1 "+flujoSalida);
             this.flujoEntrada = new ObjectInputStream(socket.getInputStream());
+            System.out.println("3");
             ControladorCliente.getInstancia().ventanaEspera();//ventana sala de espera con listita
         } catch (IOException e) {
             System.out.println(e.getMessage());
@@ -137,9 +140,10 @@ public class Cliente implements Runnable{
         	while (true) {
         		
 				// Usa el objeto cliente recibido según sea necesario
-        		System.out.println("hoolaaaaa");
+        		System.out.println("\n ====================================");
+        		System.out.println("hoolaaaaa "+ this.socket.getInputStream());
         		ObjectInputStream hashMapInputStream = new ObjectInputStream(this.socket.getInputStream());
-        		
+        		System.out.println("llegpo");
 
         		// Lee el objeto HashMap del segundo ObjectInputStream
         		Object object =   hashMapInputStream.readObject();
@@ -192,11 +196,14 @@ public class Cliente implements Runnable{
     }
 
 	public void solicitudChat(String nombre, String nombrePropio) {
-		ObjectOutputStream flujoSalida;
+		 
 		try {
 			System.out.println("Entrando a solicitud chat");
-			flujoSalida = new ObjectOutputStream(this.socket.getOutputStream());
-			flujoSalida.writeObject(new SolicitudMensaje(nombre,nombrePropio)); //cambiar 
+			System.out.println("socket "+socket );
+			SolicitudMensaje msj = new SolicitudMensaje(nombre,nombrePropio);
+			System.out.println("SALIDITA2 "+ this.flujoSalida);
+			this.paqueteDatos.writeObject( (SolicitudMensaje) msj);  
+			this.paqueteDatos.flush();
 			System.out.println("Finalizando solicitud chat");
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
