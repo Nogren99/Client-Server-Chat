@@ -39,7 +39,7 @@ public class Cliente implements Runnable{
     	//esto asi el servidor conoce el puerto del cliente al que quiero conectarme y poder hacer el envio del mensaje
         try {
         	System.out.println("0");
-            this.socket = new Socket(host, 1);
+            this.socket = new Socket(host, 1); //acordarse q el server esta harcodeado en 1
             System.out.println("socket "+socket + "histo: "+host+" puerot "+puerto);
             
             
@@ -54,7 +54,7 @@ public class Cliente implements Runnable{
             MensajeCliente datos = new MensajeCliente();
             datos.setIp(Usuario.getInstance().getIp());
             datos.setMsj(null);
-            datos.setPuerto(Usuario.getInstance().getPuerto());
+            datos.setPuerto(socket.getLocalPort());
             datos.setName(Usuario.getInstance().getNombre());
             paqueteDatos.writeObject(datos);
             paqueteDatos.flush();
@@ -168,15 +168,16 @@ public class Cliente implements Runnable{
         		} else if (object.getClass()==SolicitudMensaje.class) {
         			SolicitudMensaje solicitud = (SolicitudMensaje) object;
         			ObjectOutputStream flujoSalida = new ObjectOutputStream(this.socket.getOutputStream());
-        			int dialogButton = JOptionPane.showConfirmDialog (null, solicitud.getNombre() + " quiere iniciar una conversación contigo. ¿Aceptar?","WARNING", 0); //0 es si, 1 es no
+        			int dialogButton = JOptionPane.showConfirmDialog (null, solicitud.getNombrePropio() + " quiere iniciar una conversación contigo. ¿Aceptar?","WARNING", 0); //0 es si, 1 es no
         			if (dialogButton ==0) { // si
-        				flujoSalida.writeObject(true); //cambiar        				
-        				ControladorCliente.getInstancia().ventanaChat(); // abro ventana chat
+        				this.paqueteDatos.writeObject(true);    //escribir con este o con flujoSalida???				
+        				ControladorCliente.getInstancia().ventanaChat(); 
         			} else { // no
-        				flujoSalida.writeObject(false);
+        				this.paqueteDatos.writeObject(false);  //escribir con este o con flujoSalida???	
         			}
         		} else if (object instanceof Boolean) {
         			boolean bool = (boolean) object;
+        			System.out.println("La rta de la confirmación "+ bool  + "llegó al cliente ");
         			if (bool) {
         				ControladorCliente.getInstancia().ventanaChat();
         			} else {

@@ -146,16 +146,21 @@ public class Servidor implements Runnable {
                     	
                     	try {
                 			flujoSalida = new ObjectOutputStream(sockets.get(i).getOutputStream());
-                			flujoSalida.writeObject(new SolicitudMensaje(null,soli.getNombrePropio())); //cambiar 
+                			flujoSalida.writeObject(new SolicitudMensaje(soli.getNombre(),soli.getNombrePropio())); //cambiar 
                 			System.out.println("Solicitud enviada!");
                 		} catch (IOException e) {
                 			
-                		}
-                    } else if (object instanceof Boolean) {
+                		} 
+                    	
+                		
+                      }else if (object.getClass()==boolean.class){
+                    	System.out.println("El servidor recibió la rta de confirmación!!");
                     	ObjectOutputStream salidaConfirmacion = new ObjectOutputStream(socketSolicitante.getOutputStream());
-                    	boolean rta = (boolean) object;
-                    	salidaConfirmacion.writeObject(rta);
-                    }else {
+                      	boolean rta = (boolean) object;
+                      	System.out.println("La rta de la confirmacion "+ rta + "llegó al server");
+                      	salidaConfirmacion.writeObject(rta);
+  
+                      } else {
                     	System.out.println("recibi cualquier cosa");
                     	System.out.println(object.toString());
                     }
