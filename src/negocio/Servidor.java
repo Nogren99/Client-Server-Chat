@@ -106,14 +106,14 @@ public class Servidor implements Runnable {
                     	System.out.println("=========================");
                     	System.out.println(datos.getName()+ datos.getPuerto());
                     	Servidor.getInstancia().addCliente(datos.getName(), datos.getPuerto());
-                    	//if (Servidor.getInstancia().isSecambio()) {
+
 	                		for (int k=0; k < sockets.size() ; k++) { 			
 			                    ObjectOutputStream listaClientes = new ObjectOutputStream(sockets.get(k).getOutputStream());
 			                    System.out.println("MANDE ESTO:"+listaClientes+" por "+sockets.get(k).getOutputStream());
 			                    listaClientes.writeObject(Servidor.getInstancia().getClientes());
 			                    listaClientes.flush();
 	                		}
-		                    //Servidor.getInstancia().setSecambio(false);	
+
 		                    System.out.println("=============Iterator============");
 	                		Iterator<Map.Entry<String, Integer>> iterator = clientes.entrySet().iterator();
 		                    while (iterator.hasNext()) {
@@ -124,8 +124,6 @@ public class Servidor implements Runnable {
 		                    }		
 	                	}
                 	
-                
-                	//}
                       else if (object instanceof SolicitudMensaje) {
                     	  // nombre del usuario al que le escribo ----- nombre mio
                     	System.out.println("RECIBI SOLICITUD!!!! :O");
@@ -143,6 +141,8 @@ public class Servidor implements Runnable {
                     	}
                     	
                     	socketSolicitante= sockets.get(i); //cambiar esto luego
+                    	System.out.println("====el mensaje es  para"+socketSolicitante);
+                    	
                     	
                     	try {
                 			flujoSalida = new ObjectOutputStream(sockets.get(i).getOutputStream());
@@ -153,12 +153,13 @@ public class Servidor implements Runnable {
                 		} 
                     	
                 		
-                      }else if (object.getClass()==boolean.class){
+                      }else if (object instanceof Boolean){
                     	System.out.println("El servidor recibió la rta de confirmación!!");
-                    	ObjectOutputStream salidaConfirmacion = new ObjectOutputStream(socketSolicitante.getOutputStream());
+                    	System.out.println("+++el mensaje es  para"+socketSolicitante);
+                    	flujoSalida = new ObjectOutputStream(socketSolicitante.getOutputStream());
                       	boolean rta = (boolean) object;
                       	System.out.println("La rta de la confirmacion "+ rta + "llegó al server");
-                      	salidaConfirmacion.writeObject(rta);
+                      	flujoSalida.writeObject(rta);
   
                       } else {
                     	System.out.println("recibi cualquier cosa");

@@ -137,13 +137,14 @@ public class Cliente implements Runnable{
 
 	public void run() {
         try {
+        	System.out.println("hoolaaaaa "+ this.socket.getInputStream());
+    		//ObjectInputStream hashMapInputStream = new ObjectInputStream(this.socket.getInputStream());
+    		System.out.println("llegpo");
         	while (true) {
         		
 				// Usa el objeto cliente recibido según sea necesario
         		System.out.println("\n ====================================");
-        		System.out.println("hoolaaaaa "+ this.socket.getInputStream());
         		ObjectInputStream hashMapInputStream = new ObjectInputStream(this.socket.getInputStream());
-        		System.out.println("llegpo");
 
         		// Lee el objeto HashMap del segundo ObjectInputStream
         		Object object =   hashMapInputStream.readObject();
@@ -167,13 +168,14 @@ public class Cliente implements Runnable{
 	                ControladorCliente.getInstancia().actualizaLista( (HashMap) clientesRecibidos);
         		} else if (object.getClass()==SolicitudMensaje.class) {
         			SolicitudMensaje solicitud = (SolicitudMensaje) object;
-        			ObjectOutputStream flujoSalida = new ObjectOutputStream(this.socket.getOutputStream());
+        			//ObjectOutputStream flujoSalida = new ObjectOutputStream(this.socket.getOutputStream());
         			int dialogButton = JOptionPane.showConfirmDialog (null, solicitud.getNombrePropio() + " quiere iniciar una conversación contigo. ¿Aceptar?","WARNING", 0); //0 es si, 1 es no
         			if (dialogButton ==0) { // si
-        				this.paqueteDatos.writeObject(true);    //escribir con este o con flujoSalida???				
+        				System.out.println("CONFIRMADO PAPA");
+        				paqueteDatos.writeObject(true);    //escribir con este o con flujoSalida???				
         				ControladorCliente.getInstancia().ventanaChat(); 
         			} else { // no
-        				this.paqueteDatos.writeObject(false);  //escribir con este o con flujoSalida???	
+        				paqueteDatos.writeObject(false);  //escribir con este o con flujoSalida???	
         			}
         		} else if (object instanceof Boolean) {
         			boolean bool = (boolean) object;
@@ -183,6 +185,8 @@ public class Cliente implements Runnable{
         			} else {
         				JOptionPane.showMessageDialog(null, "Tu solicitud ha sido rechazada :(");
         			}
+        		}else{
+        			System.out.println("MANDASTE CUALQUIERA");
         		}
         		
             }
