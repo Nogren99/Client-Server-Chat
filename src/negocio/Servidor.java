@@ -60,16 +60,27 @@ public class Servidor implements Runnable {
 
     @Override
     public void run() {
-        try {
-            this.socketServer = new ServerSocket(user.getPuerto());
-            System.out.println("Servidor iniciado. Puerto: " + user.getPuerto());
-            controlador.getInstancia().ventanaEspera();
-
-            while (true) {
-                socket = socketServer.accept();
-                sockets.add(socket);
-                ObjectInputStream paquete = new ObjectInputStream(this.socket.getInputStream());
+            try {
+				this.socketServer = new ServerSocket(user.getPuerto());
+				System.out.println("Servidor iniciado. Puerto: " + user.getPuerto());
+				controlador.getInstancia().ventanaEspera();
+				while (true) {
+					socket = socketServer.accept();
+					System.out.println("Conexion establecida!!! Iniciando hilo \n");
+					System.out.println("Socket: "+ socket.toString());
+					sockets.add(socket);
+					Thread clientThread = new Thread(new EscucharCliente(socket));
+	                clientThread.start();
+				}
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+           
+    }
+                /*ObjectInputStream paquete = new ObjectInputStream(this.socket.getInputStream());
                 Object object = paquete.readObject();
+                System.out.println("Objeto recibido: "+ object.toString());
               //  this.msj = (MensajeCliente) paquete.readObject();
                 if (object instanceof MensajeCliente) {    //hacer otro objeto despues para que lea los datos
                 	this.msj = (MensajeCliente) object;
@@ -84,16 +95,36 @@ public class Servidor implements Runnable {
                 	ObjectOutputStream salidaConfirmacion = new ObjectOutputStream(this.socketSolicitante.getOutputStream());
                 	boolean rta = (boolean) object;
                 	salidaConfirmacion.writeObject(rta);
+                } else if (object instanceof SolicitudMensaje) {
+                	SolicitudMensaje soli = (SolicitudMensaje) object;
+                	System.out.println(Arrays.asList(clientes));
+                	System.out.println(this.clientes.get(soli.getNombre()));
+                	int puerto = this.clientes.get(soli.getNombre());
+                	int i=0;
+                	while (i<sockets.size() && sockets.get(i).getPort()!=puerto) {
+                		System.out.println("Puerto numero "+ i + "  :" +puerto);
+                		i++;
+                	}
+                	
+                	this.socketSolicitante= sockets.get(i); //cambiar esto luego
+                	
+                	try {
+            			ObjectOutputStream flujoSalida = new ObjectOutputStream(sockets.get(i).getOutputStream());
+            			flujoSalida.writeObject(new SolicitudMensaje(null,soli.getNombrePropio())); //cambiar 
+            			System.out.println("Solicitud enviada!");
+            		} catch (IOException e) {
+            			
+            		}
                 }
-            }
-
-        } catch (IOException | ClassNotFoundException e) {
+            }*/
+           
+         
             // Manejar la excepción apropiadamente
-        }
-    }
+        
     
     
-    public void solicitudChat(String nombre, String nombrePropio) {
+    
+  /*  public void solicitudChat(String nombre, String nombrePropio) {
     	System.out.println(Arrays.asList(clientes));
     	System.out.println(this.clientes.get(nombre));
     	int puerto = this.clientes.get(nombre);
@@ -114,7 +145,7 @@ public class Servidor implements Runnable {
 		}
     	
     	
-    }
+    } */
     
     /*
     public void enviarObjetoACliente(String nombreCliente, Object objeto) {
@@ -176,57 +207,94 @@ public class Servidor implements Runnable {
 	}
 
 
+		private class ObjetosRecibidos implements Runnable {
 
+			
+			
+			
+			
+			@Override
+			public void run() {
+				// TODO Auto-generated method stub
+				
+			}
+					
+		}
 
 
 
 		private class EscucharCliente implements Runnable {
             private Socket cliente;
-            private ObjectInputStream flujoEntrada;
-            private ObjectOutputStream flujoSalida;
             private String nombreCliente;
 
             public EscucharCliente(Socket cliente) {
                 this.cliente = cliente;
-                try {
-                    flujoEntrada = new ObjectInputStream(cliente.getInputStream());
-                    flujoSalida = new ObjectOutputStream(cliente.getOutputStream());
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
             }
 
             @Override
             public void run() {
                 try {
-                	
-                	while (true) {		
-	                	if (Servidor.getInstancia().isSecambio()) {
-	                		for (int k=0; k < sockets.size() ; k++) {
-	                			System.out.println("La lista fue cambiada, actualizando...");
-			                    ObjectOutputStream listaClientes = new ObjectOutputStream(sockets.get(k).getOutputStream());
-			                    listaClientes.writeObject(Servidor.getInstancia().getClientes());
-			                    listaClientes.flush();
-			                                                                
- 	
-	                		}
-	                		System.out.println("Seteamos secambió a falso");
-		                    Servidor.getInstancia().setSecambio(false);	
-	                		Iterator<Map.Entry<String, Integer>> iterator = clientes.entrySet().iterator();
-		                    while (iterator.hasNext()) {
-		                        Map.Entry<String, Integer> entry = iterator.next();
-		                        String nombre = entry.getKey();
-		                        Integer puerto = entry.getValue();
-		                      //  System.out.println("Cliente: " + nombre + ", Puerto: " + puerto);
-		                    }		
-                	}
+                	System.out.println("Entrando al run de servidor, ahora intentaremos leer objetos ^^ ");
+                	while (true) {	
+                		System.out.println("Socket cliente: "+ this.cliente.toString());
+
+                		
+                		ObjectInputStream flujoEntrada = new ObjectInputStream(cliente.getInputStream());
+                        Object object = flujoEntrada.readObject();
+                        
+                        System.out.println("Objeto recibido: "+ object.toString());
+                        if (object instanceof MensajeCliente) {
+                        	MensajeCliente datos = (MensajeCliente) object;
+                        	Servidor.getInstancia().addCliente(datos.getName(), datos.getPuerto());
+                        	//if (Servidor.getInstancia().isSecambio()) {
+		                		for (int k=0; k < sockets.size() ; k++) { 			
+				                    ObjectOutputStream listaClientes = new ObjectOutputStream(sockets.get(k).getOutputStream());
+				                    listaClientes.writeObject(Servidor.getInstancia().getClientes());
+				                    listaClientes.flush();
+		                		}
+			                    Servidor.getInstancia().setSecambio(false);	
+		                		Iterator<Map.Entry<String, Integer>> iterator = clientes.entrySet().iterator();
+			                    while (iterator.hasNext()) {
+			                        Map.Entry<String, Integer> entry = iterator.next();
+			                        String nombre = entry.getKey();
+			                        Integer puerto = entry.getValue();
+			                      //  System.out.println("Cliente: " + nombre + ", Puerto: " + puerto);
+			                    }		
+		                	}
 	                	
 	                
-	                	
-                    }
-                } catch (IOException e) {
+	                	//}
+                          else if (object instanceof SolicitudMensaje) {
+                        	SolicitudMensaje soli = (SolicitudMensaje) object;
+                        	System.out.println(Arrays.asList(clientes));
+                        	
+                        	System.out.println(Servidor.getInstancia().getClientes().get(soli.getNombre()));
+                        	int puerto = Servidor.getInstancia().getClientes().get(soli.getNombre());
+                        	int i=0;
+                        	while (i<sockets.size() && sockets.get(i).getPort()!=puerto) {
+                        		System.out.println("Puerto numero "+ i + "  :" +puerto);
+                        		i++;
+                        	}
+                        	
+                        	socketSolicitante= sockets.get(i); //cambiar esto luego
+                        	
+                        	try {
+                    			ObjectOutputStream flujoSalida = new ObjectOutputStream(sockets.get(i).getOutputStream());
+                    			flujoSalida.writeObject(new SolicitudMensaje(null,soli.getNombrePropio())); //cambiar 
+                    			System.out.println("Solicitud enviada!");
+                    		} catch (IOException e) {
+                    			
+                    		}
+                        } else if (object instanceof Boolean) {
+                        	ObjectOutputStream salidaConfirmacion = new ObjectOutputStream(socketSolicitante.getOutputStream());
+                        	boolean rta = (boolean) object;
+                        	salidaConfirmacion.writeObject(rta);
+                        } 
+                	}
+                } catch (IOException | ClassNotFoundException e) {
 
                 }
+                
             }
         }
    

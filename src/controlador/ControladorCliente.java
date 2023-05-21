@@ -117,7 +117,7 @@ public class ControladorCliente implements ActionListener, Runnable {
         	System.out.println("Nombre seleccionado: "+ nombre);
             this.vista.cerrar();
             
-            Servidor.getInstancia().solicitudChat(nombre, Usuario.getInstance().getNombre());
+            Cliente.getInstancia().solicitudChat(nombre, Usuario.getInstance().getNombre());
             
             /*this.setVista(new Chat());
             Chat ventana = (Chat) this.vista; */

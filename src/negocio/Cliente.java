@@ -39,9 +39,14 @@ public class Cliente implements Runnable{
         try {
         	System.out.println("0");
             this.socket = new Socket(host, 1);
-            System.out.println("socket"+socket + "histo:"+host+"puerot"+puerto);
-            //this.flujoSalida = new ObjectOutputStream(socket.getOutputStream());
-            //this.flujoEntrada = new ObjectInputStream(socket.getInputStream());
+            System.out.println("socket "+socket + "histo: "+host+"puerot "+puerto);
+            
+            
+           // this.flujoSalida = new ObjectOutputStream(socket.getOutputStream());
+          //  this.flujoEntrada = new ObjectInputStream(socket.getInputStream());
+            
+            
+            
             System.out.println("2");
             
             ObjectOutputStream paqueteDatos = new ObjectOutputStream(socket.getOutputStream());
@@ -122,7 +127,12 @@ public class Cliente implements Runnable{
 	}
 	
 	
-    public void run() {
+	
+    public Socket getSocket() {
+		return socket;
+	}
+
+	public void run() {
         try {
         	while (true) {
         		
@@ -180,6 +190,20 @@ public class Cliente implements Runnable{
 			e.printStackTrace();
 		} finally {} 
     }
+
+	public void solicitudChat(String nombre, String nombrePropio) {
+		ObjectOutputStream flujoSalida;
+		try {
+			System.out.println("Entrando a solicitud chat");
+			flujoSalida = new ObjectOutputStream(this.socket.getOutputStream());
+			flujoSalida.writeObject(new SolicitudMensaje(nombre,nombrePropio)); //cambiar 
+			System.out.println("Finalizando solicitud chat");
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	
+	}
 	
 	
 	
