@@ -17,6 +17,7 @@ import java.util.Iterator;
 
 import controlador.ControladorCliente;
 import controlador.ControladorServidor;
+import modelo.ConfirmacionSolicitud;
 import modelo.MensajeCliente;
 import modelo.SolicitudMensaje;
 import modelo.Usuario;
@@ -141,7 +142,7 @@ public class Servidor implements Runnable {
                     	}
                     	
                     	socketSolicitante= sockets.get(i); //cambiar esto luego
-                    	System.out.println("====el mensaje es  para"+socketSolicitante);
+                    	System.out.println("====el mensaje es  p" + "ara"+socketSolicitante);
                     	
                     	
                     	try {
@@ -153,13 +154,26 @@ public class Servidor implements Runnable {
                 		} 
                     	
                 		
-                      }else if (object instanceof Boolean){
-                    	System.out.println("El servidor recibió la rta de confirmación!!");
-                    	System.out.println("+++el mensaje es  para"+socketSolicitante);
-                    	flujoSalida = new ObjectOutputStream(socketSolicitante.getOutputStream());
-                      	boolean rta = (boolean) object;
-                      	System.out.println("La rta de la confirmacion "+ rta + "llegó al server");
-                      	flujoSalida.writeObject(rta);
+                      }else if (object instanceof ConfirmacionSolicitud){
+                    	System.out.println("El servidor recibió la rta de confirmación!!"); 
+                    	ConfirmacionSolicitud confirmacion = (ConfirmacionSolicitud) object; 
+                    	int puerto = Servidor.getInstancia().getClientes().get(confirmacion.getNombreSolicitante());
+                    	
+                    	System.out.println("Obtuvimos el puerto "+ puerto);
+                    	
+                    	int i=0;
+                    	while (i<sockets.size() && sockets.get(i).getPort()!=puerto) {
+                    		System.out.println("Sokket numero "+ i + " Puerto :" +sockets.get(i).getLocalPort());
+                    		i++;
+                    	}
+                    	
+                    	System.out.println("+++el mensaje es  para"+sockets.get(i));
+                    	flujoSalida = new ObjectOutputStream(sockets.get(i).getOutputStream());
+                    	
+                    	
+
+                      	System.out.println("La rta de la confirmacion "+ confirmacion.isConfirmacion() + "llegó al server");
+                      	flujoSalida.writeObject(confirmacion.isConfirmacion());
   
                       } else {
                     	System.out.println("recibi cualquier cosa");

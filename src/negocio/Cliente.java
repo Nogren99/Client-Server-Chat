@@ -14,6 +14,7 @@ import java.util.Map;
 import javax.swing.JOptionPane;
 
 import controlador.ControladorCliente;
+import modelo.ConfirmacionSolicitud;
 import modelo.MensajeCliente;
 import modelo.SolicitudMensaje;
 import modelo.Usuario;
@@ -172,10 +173,10 @@ public class Cliente implements Runnable{
         			int dialogButton = JOptionPane.showConfirmDialog (null, solicitud.getNombrePropio() + " quiere iniciar una conversación contigo. ¿Aceptar?","WARNING", 0); //0 es si, 1 es no
         			if (dialogButton ==0) { // si
         				System.out.println("CONFIRMADO PAPA");
-        				paqueteDatos.writeObject(true);    //escribir con este o con flujoSalida???				
+        				paqueteDatos.writeObject(new ConfirmacionSolicitud(true,solicitud.getNombrePropio()));    //escribir con este o con flujoSalida???				
         				ControladorCliente.getInstancia().ventanaChat(); 
         			} else { // no
-        				paqueteDatos.writeObject(false);  //escribir con este o con flujoSalida???	
+        				paqueteDatos.writeObject(new ConfirmacionSolicitud(false,solicitud.getNombrePropio()));  //escribir con este o con flujoSalida???	
         			}
         		} else if (object instanceof Boolean) {
         			boolean bool = (boolean) object;
