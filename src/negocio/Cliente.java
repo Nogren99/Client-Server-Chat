@@ -14,7 +14,9 @@ import java.util.Map;
 import javax.swing.JOptionPane;
 
 import controlador.ControladorCliente;
+import modelo.ActualizarLista;
 import modelo.ClienteNoDisponible;
+import modelo.ConexionTerminada;
 import modelo.ConfirmacionSolicitud;
 import modelo.Mensaje;
 import modelo.MensajeCliente;
@@ -179,13 +181,13 @@ public class Cliente implements Runnable{
         				paqueteDatos.writeObject(new ClienteNoDisponible(solicitud.getNombrePropio()));
         			} else {
 	        			//ObjectOutputStream flujoSalida = new ObjectOutputStream(this.socket.getOutputStream());
-	        			int dialogButton = JOptionPane.showConfirmDialog (null, solicitud.getNombrePropio() + " quiere iniciar una conversación contigo. ¿Aceptar?","WARNING", 0); //0 es si, 1 es no
+	        			int dialogButton = JOptionPane.showConfirmDialog (null, solicitud.getNombrePropio() + " quiere iniciar una conversación contigo. ¿Aceptar?","Solicitud entrante", 0); //0 es si, 1 es no
 	        			if (dialogButton ==0) { // si
 	        				System.out.println("CONFIRMADO PAPA");
 	        				ControladorCliente.getInstancia().setSolicitante(false);
 	        				this.nombreInterlocutor=solicitud.getNombrePropio();
 	        				paqueteDatos.writeObject(new ConfirmacionSolicitud(true,solicitud.getNombrePropio()));    //escribir con este o con flujoSalida???				
-	        				ControladorCliente.getInstancia().ventanaChat(); 
+	        				ControladorCliente.getInstancia().ventanaChatSolicitado(solicitud.getNombrePropio()); 
 	        				this.estoyEnLlamada=true;
 	        			} else { // no
 	        				paqueteDatos.writeObject(new ConfirmacionSolicitud(false,solicitud.getNombrePropio()));  //escribir con este o con flujoSalida???	
@@ -198,7 +200,7 @@ public class Cliente implements Runnable{
         				ControladorCliente.getInstancia().setSolicitante(true);
         				this.aceptada=true;
         				this.estoyEnLlamada=true;
-        				ControladorCliente.getInstancia().ventanaChat();
+        				ControladorCliente.getInstancia().ventanaChatSolicitante();
         			} else {
         				JOptionPane.showMessageDialog(null, "Tu solicitud ha sido rechazada :(");
         			}
@@ -208,6 +210,9 @@ public class Cliente implements Runnable{
         			
         		} else if (object instanceof ClienteNoDisponible){
         			JOptionPane.showMessageDialog(null, "El usuario no está disponible!");
+        		} else if (object instanceof ConexionTerminada){
+        			this.estoyEnLlamada=false;
+        			ControladorCliente.getInstancia().abrirVentanaEspera();       			
         		} else {
         			System.out.println("MANDASTE CUALQUIERA");
         		}
@@ -237,6 +242,25 @@ public class Cliente implements Runnable{
 			e.printStackTrace();
 		}
 	
+	}
+	
+	public void actualizarLista(String nombre) {
+		try {
+			paqueteDatos.writeObject(new ActualizarLista(nombre));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	public void cerrarConexion(String nombreDestinatario) {
+		try {
+			this.estoyEnLlamada=false;
+			this.paqueteDatos.writeObject(new ConexionTerminada(nombreDestinatario));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	

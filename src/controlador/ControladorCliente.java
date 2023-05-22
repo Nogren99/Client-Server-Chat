@@ -41,6 +41,7 @@ public class ControladorCliente implements ActionListener {
     private Thread comunicacion;
     private String nombreDestinatario;
     private MensajeCliente paquete;
+    private String nombreSolicitante;
     
     public void setMsj(String msj) {
 		this.msj = msj;
@@ -136,6 +137,16 @@ public class ControladorCliente implements ActionListener {
             Chat ventana = (Chat) this.vista; */
 
 
+        } else if (comando.equalsIgnoreCase("Cerrar")) {
+        	this.vista.cerrar();
+        	this.setVista(new SalaDeEsperaCliente());
+        	if (this.isSolicitante())
+        		Cliente.getInstancia().cerrarConexion(this.nombreDestinatario);
+        	else
+        		Cliente.getInstancia().cerrarConexion(this.nombreSolicitante);
+        	Cliente.getInstancia().actualizarLista(Usuario.getInstance().getNombre());
+        	
+        	
         }
     }
     
@@ -183,9 +194,19 @@ public class ControladorCliente implements ActionListener {
 		this.isSolicitante = isSolicitante;
 	}
 
-	public void ventanaChat() {
+	public void ventanaChatSolicitante() {
     	this.vista.cerrar();
     	this.setVista(new Chat());
+    	Chat chat = (Chat) this.vista;
+    	chat.getLblChatCon().setText("Chat con: "+ this.nombreDestinatario);
+    }
+	
+	public void ventanaChatSolicitado(String nombre) {
+    	this.vista.cerrar();
+    	this.setVista(new Chat());
+    	this.nombreSolicitante=nombre;
+    	Chat chat = (Chat) this.vista;
+    	chat.getLblChatCon().setText("Chat con: "+ nombre);
     }
 	
 	public void actualizaChat(String nombre, String mensaje) {
@@ -200,6 +221,12 @@ public class ControladorCliente implements ActionListener {
     	this.comunicacion.interrupt();
     }
     
+    public void abrirVentanaEspera() {
+    	this.vista.cerrar();
+    	JOptionPane.showMessageDialog(null, "Tu contacto terminó la conexión!");
+    	this.setVista(new SalaDeEsperaCliente());
+    	Cliente.getInstancia().actualizarLista(Usuario.getInstance().getNombre());
+    }
 
 
 	//@Override

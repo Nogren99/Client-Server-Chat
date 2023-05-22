@@ -46,6 +46,10 @@ public class Chat extends JFrame implements Ivista, WindowListener {
 	private JPanel panel_18;
 	private JPanel panel_19;
 	private JTextArea textArea;
+	private JPanel panel_7;
+	private JButton btnNewButton_1;
+	private JPanel panel_13;
+	private JLabel lblChatCon;
 	/**
 	 * Launch the application.
 	 */
@@ -96,6 +100,20 @@ public class Chat extends JFrame implements Ivista, WindowListener {
 		
 		textArea = new JTextArea();
 		scrollPane.setViewportView(textArea);
+		
+		this.panel_7 = new JPanel();
+		this.panel_8.add(this.panel_7, BorderLayout.NORTH);
+		this.panel_7.setLayout(new BorderLayout(0, 0));
+		
+		this.btnNewButton_1 = new JButton("Cerrar");
+		this.panel_7.add(this.btnNewButton_1, BorderLayout.WEST);
+		
+		this.panel_13 = new JPanel();
+		this.panel_13.setBackground(new Color(195, 222, 214));
+		this.panel_7.add(this.panel_13, BorderLayout.CENTER);
+		
+		this.lblChatCon = new JLabel("Chat con:");
+		this.panel_13.add(this.lblChatCon);
 		
 		this.panel_9 = new JPanel();
 		this.panel_9.setBackground(new Color(195, 222, 214));
@@ -162,11 +180,24 @@ public class Chat extends JFrame implements Ivista, WindowListener {
 		this.setVisible(true);
 	}
 	
+	
+	
+	public JLabel getLblChatCon() {
+		return lblChatCon;
+	}
+
+	public void setLblChatCon(JLabel lblChatCon) {
+		this.lblChatCon = lblChatCon;
+	}
+
 	@Override
 	public void setActionListener(ActionListener actionListener) {
 		this.btnNewButton.addActionListener(actionListener);
-		this.actionListener=actionListener;
+		this.btnNewButton_1.addActionListener(actionListener);
+		this.actionListener = actionListener;
 	}
+	
+	
 
 	public DefaultListModel getModeloListaEnviados() {
 		return modeloListaEnviados;

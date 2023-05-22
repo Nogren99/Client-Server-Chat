@@ -24,7 +24,7 @@ public class Sistema implements Runnable {
 	    return instancia;
 	}
 	
-    public void solicitarChat(String ip, int puerto) {
+  /*  public void solicitarChat(String ip, int puerto) {
     	System.out.println(this.user.getNombre()+" | meotod solicitarChat | "+ "ip:"+ip+" puerto :"+puerto);
     	try {
     		this.socket = new Socket(ip,puerto);
@@ -32,17 +32,17 @@ public class Sistema implements Runnable {
             this.in = new BufferedReader(inSocket);
             this.out = new PrintWriter(socket.getOutputStream(), true);
             this.out.println(Usuario.getInstance().getNombre());
-            ControladorCliente.getInstancia().ventanaChat();
+            ControladorCliente.getInstancia().ventanaChatSolicitante();
     	}catch (IOException e) {
     	}
-    }
+    } */
     
     public void enviarMensaje(String mensaje) throws IOException {
         this.out.println(mensaje);
         System.out.println(this.user.getNombre()+" |metodo enviarMensaje| : "+mensaje);
     }
 
-    @Override
+  /*  @Override
     public void run() {
         try {
         	//ACTIVO MODO ESCUCHA
@@ -70,7 +70,7 @@ public class Sistema implements Runnable {
   
         }catch (IOException e) {
         }
-    }
+    } */
 
     
     /*
@@ -141,6 +141,12 @@ public class Sistema implements Runnable {
         this.out = null;
         this.in = null;
         this.inSocket = null;
+	}
+
+	@Override
+	public void run() {
+		// TODO Auto-generated method stub
+		
 	}
 	    
 }

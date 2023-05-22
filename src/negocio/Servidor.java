@@ -17,7 +17,9 @@ import java.util.Iterator;
 
 import controlador.ControladorCliente;
 import controlador.ControladorServidor;
+import modelo.ActualizarLista;
 import modelo.ClienteNoDisponible;
+import modelo.ConexionTerminada;
 import modelo.ConfirmacionSolicitud;
 import modelo.Mensaje;
 import modelo.MensajeCliente;
@@ -209,7 +211,35 @@ public class Servidor implements Runnable {
                       	  
                     	  
                     	  
-                      }else {
+                      }else if (object instanceof ConexionTerminada){
+                    	  ConexionTerminada conexionTerminada = (ConexionTerminada) object;
+                    	  int puerto = Servidor.getInstancia().getClientes().get(conexionTerminada.getNombreDestinatario());
+                    	  int i=0;
+                    	  
+                      	  while (i<sockets.size() && sockets.get(i).getPort()!=puerto) {
+                      		System.out.println("Soquet numero "+ i + " Puerto :" +sockets.get(i).getLocalPort());
+                      		i++;
+                      	  }
+                      	  
+                      	flujoSalida = new ObjectOutputStream(sockets.get(i).getOutputStream());
+                        flujoSalida.writeObject(conexionTerminada);
+                    	  
+                    	  
+                      } else if (object instanceof ActualizarLista){
+                    	  ActualizarLista act = (ActualizarLista) object;
+                    	  
+                    	  int puerto = Servidor.getInstancia().getClientes().get(act.getNombre());
+                    	  int i=0;
+                    	  
+                      	  while (i<sockets.size() && sockets.get(i).getPort()!=puerto) {
+                      		System.out.println("Soquet numero "+ i + " Puerto :" +sockets.get(i).getLocalPort());
+                      		i++;
+                      	  }
+                      	  
+                      	flujoSalida = new ObjectOutputStream(sockets.get(i).getOutputStream());
+                        flujoSalida.writeObject(Servidor.getInstancia().getClientes());
+                    	  
+                      } else {
                     	System.out.println("recibi cualquier cosa");
                     	System.out.println(object.toString());
                     }

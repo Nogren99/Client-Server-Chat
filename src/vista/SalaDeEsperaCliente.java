@@ -7,7 +7,8 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.border.EmptyBorder;
-
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 import java.awt.GridLayout;
 import java.awt.SystemColor;
@@ -67,6 +68,16 @@ public class SalaDeEsperaCliente extends JFrame implements Ivista {
 		this.list = new JList();
 		this.list.setModel(modeloLista);
 		this.scrollPane.setViewportView(this.list);
+		this.list.addListSelectionListener(new ListSelectionListener() {
+			 @Override
+	            public void valueChanged(ListSelectionEvent e) {
+	                if (!list.isSelectionEmpty()) { 	
+	                    btnAlta.setEnabled(true); // Habilitar el botón si hay una selección
+	                } else {
+	                    btnAlta.setEnabled(false); // Deshabilitar el botón si no hay selección
+	                }
+	            }
+		});
 		
 		this.panelNorte = new JPanel();
 		this.panelNorte.setBackground(SystemColor.inactiveCaption);
@@ -94,6 +105,7 @@ public class SalaDeEsperaCliente extends JFrame implements Ivista {
 		panelBotones.add(this.panelAlta);
 		
 		this.btnAlta = new JButton("Conectar");
+		this.btnAlta.setEnabled(false);
 		btnAlta.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 			}
@@ -118,7 +130,8 @@ public class SalaDeEsperaCliente extends JFrame implements Ivista {
 	public JList<Object> getList() {
 		return list;
 	}
-
+	
+	 
 	public DefaultListModel<Object> getModeloLista() {
 		return modeloLista;
 	}
