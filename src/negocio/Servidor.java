@@ -31,7 +31,6 @@ public class Servidor implements Runnable {
     private static ControladorServidor controlador;
     
     private boolean secambio=false;
-    private Socket socketSolicitante;
 
     private Usuario user;
     private ServerSocket socketServer;
@@ -126,7 +125,6 @@ public class Servidor implements Runnable {
                     		i++;
                     	}
                     	
-                    	socketSolicitante= sockets.get(i); 
                     	try {
                 			flujoSalida = new ObjectOutputStream(sockets.get(i).getOutputStream());
                 			flujoSalida.writeObject(new SolicitudMensaje(soli.getNombre(),soli.getNombrePropio()));
@@ -174,8 +172,6 @@ public class Servidor implements Runnable {
                       	  
                       	flujoSalida = new ObjectOutputStream(sockets.get(i).getOutputStream());
                         flujoSalida.writeObject(cdp);
-                      	  
-                    	  
                     	  
                       }else if (object instanceof ConexionTerminada){
                     	  ConexionTerminada conexionTerminada = (ConexionTerminada) object;

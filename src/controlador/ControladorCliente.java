@@ -31,21 +31,12 @@ import vista.SalaDeEsperaCliente;
 public class ControladorCliente implements ActionListener {
 
 	private Ivista vista;
-	private WindowListener escuchaVentana;
-	private Sistema sistema = Sistema.getInstancia();
 	private Cliente cliente = Cliente.getInstancia();
-	private JTextField textField;
-	private String msj;
 	private boolean isSolicitante;
 	private static ControladorCliente instancia;
 	private Thread comunicacion;
 	private String nombreDestinatario;
-	private MensajeCliente paquete;
 	private String nombreSolicitante;
-
-	public void setMsj(String msj) {
-		this.msj = msj;
-	}
 
 	public static ControladorCliente getInstancia() {
 		if (instancia == null)
@@ -109,11 +100,6 @@ public class ControladorCliente implements ActionListener {
 			// DATOS DEL SERVIDOR
 			String ip = ventana.getTextFieldIPSV().getText();
 			int puerto = Integer.parseInt(ventana.getTextFieldPuertoSV().getText());
-			System.out.println("me conecto a:" + ip + "puerto" + puerto);
-
-			System.out.println("soy" + Usuario.getInstance().getNombre() + Usuario.getInstance().getIp()
-					+ Usuario.getInstance().getPuerto());
-			System.out.println("Datos del servier" + ip + " puerto " + puerto);
 
 			// Conectar al servidor
 			this.cliente.conectar(ip, puerto);

@@ -47,8 +47,6 @@ public class Cliente implements Runnable{
     public void conectar(String host, int puerto) { 
         try {
             this.socket = new Socket(host, 1); //acordarse q el server esta harcodeado en 1
-            System.out.println("Mis datos : socket "+socket + "histo: "+host+" puerot "+puerto);
-            
             paqueteDatos = new ObjectOutputStream(socket.getOutputStream());
             MensajeCliente datos = new MensajeCliente();
             datos.setIp(Usuario.getInstance().getIp());
@@ -58,6 +56,7 @@ public class Cliente implements Runnable{
             paqueteDatos.writeObject(datos);
             paqueteDatos.flush();
             
+            System.out.println("Mis datos : Nombre: "+Usuario.getInstance().getNombre()+" socket: "+socket + "histo: "+host+" puerot "+puerto);
             this.flujoEntrada = new ObjectInputStream(socket.getInputStream());
             ControladorCliente.getInstancia().ventanaEspera();//ventana sala de espera con listita
         } catch (IOException e) {
@@ -66,13 +65,10 @@ public class Cliente implements Runnable{
     }
 
     public void enviarMensaje(String mensaje, String nombre, String nombreDestinatario) {
-        try {
-        	System.out.println("Enviando mensaje "+ mensaje + "al servidor");
-        	
+        try {     	
         	//encriptacion
     		byte[] textoEncriptado = encriptar("12345678", mensaje, "DES");
     		String textoEncriptadoBase64 = Base64.getEncoder().encodeToString(textoEncriptado);
-    		System.out.println(textoEncriptadoBase64);
     		textoEncriptado = Base64.getDecoder().decode(textoEncriptadoBase64);
 
     		paqueteDatos.writeObject(new Mensaje(textoEncriptado,nombre,nombreDestinatario));
@@ -177,7 +173,7 @@ public class Cliente implements Runnable{
         			this.estoyEnLlamada=false;
         			ControladorCliente.getInstancia().abrirVentanaEspera();       			
         		} else {
-        			System.out.println("MANDASTE CUALQUIERA");
+        			System.out.println(object.toString());
         		}
         		
             }
@@ -196,13 +192,9 @@ public class Cliente implements Runnable{
 
 	public void solicitudChat(String nombre, String nombrePropio) { 
 		try {
-			System.out.println("Entrando a solicitud chat");
-			System.out.println("socket "+socket );
 			SolicitudMensaje msj = new SolicitudMensaje(nombre,nombrePropio);
-			System.out.println("SALIDITA2 "+ this.flujoSalida);
 			this.paqueteDatos.writeObject( (SolicitudMensaje) msj);  
 			this.paqueteDatos.flush();
-			System.out.println("Finalizando solicitud chat");
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
