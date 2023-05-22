@@ -15,6 +15,7 @@ import javax.swing.JOptionPane;
 
 import controlador.ControladorCliente;
 import modelo.ConfirmacionSolicitud;
+import modelo.Mensaje;
 import modelo.MensajeCliente;
 import modelo.SolicitudMensaje;
 import modelo.Usuario;
@@ -26,7 +27,9 @@ public class Cliente implements Runnable{
     private ObjectOutputStream flujoSalida;
     private ObjectInputStream flujoEntrada;
     private MensajeCliente paqueteRecibido;
+    private String nombreInterlocutor;
     ObjectOutputStream paqueteDatos;
+    private boolean aceptada = false;
     
 	public static Cliente getInstancia() {
 		if (instancia == null)
@@ -70,17 +73,17 @@ public class Cliente implements Runnable{
         }
     }
 
-    public void enviarMensaje(String mensaje) {
-    	this.paqueteMsj.setMsj(mensaje);
+    public void enviarMensaje(String mensaje, String nombre, String nombreDestinatario) {
         try {
-			this.flujoSalida = new ObjectOutputStream(socket.getOutputStream());
-			this.flujoSalida.writeObject(paqueteMsj);
-			flujoSalida.flush();
+        	System.out.println("Enviando mensaje "+ mensaje + "al servidor");
+			//this.paqueteDatos = new ObjectOutputStream(socket.getOutputStream());
+			paqueteDatos.writeObject(new Mensaje(mensaje,nombre,nombreDestinatario));
+			paqueteDatos.flush();
+			//flujoSalida.flush();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
-        
+		}   
     }
     /*
     public void esperarConexion() {
@@ -99,7 +102,7 @@ public class Cliente implements Runnable{
     }*/
     
 
-    public MensajeCliente recibirMensaje() {
+  /*  public MensajeCliente recibirMensaje() {
         try {
         	this.flujoEntrada = new ObjectInputStream(socket.getInputStream());
         	paqueteRecibido = (MensajeCliente) this.flujoEntrada.readObject();
@@ -108,7 +111,7 @@ public class Cliente implements Runnable{
             // Manejar la excepción apropiadamente
         }
         return null;
-    }
+    } */
 
     public void desconectar() {
         try {
@@ -173,6 +176,8 @@ public class Cliente implements Runnable{
         			int dialogButton = JOptionPane.showConfirmDialog (null, solicitud.getNombrePropio() + " quiere iniciar una conversación contigo. ¿Aceptar?","WARNING", 0); //0 es si, 1 es no
         			if (dialogButton ==0) { // si
         				System.out.println("CONFIRMADO PAPA");
+        				ControladorCliente.getInstancia().setSolicitante(false);
+        				this.nombreInterlocutor=solicitud.getNombrePropio();
         				paqueteDatos.writeObject(new ConfirmacionSolicitud(true,solicitud.getNombrePropio()));    //escribir con este o con flujoSalida???				
         				ControladorCliente.getInstancia().ventanaChat(); 
         			} else { // no
@@ -182,11 +187,17 @@ public class Cliente implements Runnable{
         			boolean bool = (boolean) object;
         			System.out.println("La rta de la confirmación "+ bool  + "llegó al cliente ");
         			if (bool) {
+        				ControladorCliente.getInstancia().setSolicitante(true);
+        				this.aceptada=true;
         				ControladorCliente.getInstancia().ventanaChat();
         			} else {
         				JOptionPane.showMessageDialog(null, "Tu solicitud ha sido rechazada :(");
         			}
-        		}else{
+        		}else if (object instanceof Mensaje){
+        			Mensaje mensaje = (Mensaje) object;
+        			ControladorCliente.getInstancia().actualizaChat(mensaje.getNombreMio(), mensaje.getMensaje());
+        			
+        		} else {
         			System.out.println("MANDASTE CUALQUIERA");
         		}
         		
@@ -201,8 +212,7 @@ public class Cliente implements Runnable{
 		} finally {} 
     }
 
-	public void solicitudChat(String nombre, String nombrePropio) {
-		 
+	public void solicitudChat(String nombre, String nombrePropio) { 
 		try {
 			System.out.println("Entrando a solicitud chat");
 			System.out.println("socket "+socket );
@@ -216,6 +226,16 @@ public class Cliente implements Runnable{
 			e.printStackTrace();
 		}
 	
+	}
+	
+	
+
+	public String getNombreInterlocutor() {
+		return nombreInterlocutor;
+	}
+
+	public boolean isAceptada() {
+		return aceptada;
 	}
 	
 	

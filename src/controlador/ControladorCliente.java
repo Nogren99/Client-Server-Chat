@@ -28,7 +28,7 @@ import vista.Inicio;
 import vista.SalaDeEspera;
 import vista.SalaDeEsperaCliente;
 
-public class ControladorCliente implements ActionListener, Runnable {
+public class ControladorCliente implements ActionListener {
 
 	private Ivista vista;
 	private WindowListener escuchaVentana;
@@ -36,8 +36,10 @@ public class ControladorCliente implements ActionListener, Runnable {
     private Cliente cliente = Cliente.getInstancia();
     private JTextField textField;
     private String msj;
+    private boolean isSolicitante;
     private static ControladorCliente instancia;
     private Thread comunicacion;
+    private String nombreDestinatario;
     private MensajeCliente paquete;
     
     public void setMsj(String msj) {
@@ -104,11 +106,21 @@ public class ControladorCliente implements ActionListener, Runnable {
         }else if (comando.equalsIgnoreCase("Enviar")){
         	Chat ventana = (Chat) this.vista;
         	String msj = ventana.getTextField().getText();
+        	ventana.getTextField().setText("");
         	System.out.println("mensaje: "+msj);
         	
         	if (msj != null && !msj.isEmpty()) {
-			    this.cliente.getInstancia().enviarMensaje(msj);
-			    ventana.getTextArea().append(Usuario.getInstance().getNombre()+" : " +msj+"\n");
+        		ventana.getTextArea().append(Usuario.getInstance().getNombre()+"(Tu) : " +msj+"\n");
+        		System.out.println("issolicitante:  "+ this.isSolicitante);
+        		if (this.isSolicitante) {	
+        			//enviarMensaje(mensaje,mi nombre, nombredestinatario)
+        			Cliente.getInstancia().enviarMensaje(msj, Usuario.getInstance().getNombre(), this.nombreDestinatario);
+        		} else if (this.isSolicitante==false) {
+        			Cliente.getInstancia().enviarMensaje(msj, Usuario.getInstance().getNombre(), Cliente.getInstancia().getNombreInterlocutor());
+        		}
+        		
+			   // this.cliente.getInstancia().enviarMensaje(msj);
+			    
 			}
         } else if(comando.equalsIgnoreCase("Conectar")) {
         	SalaDeEsperaCliente vistaSeleccion = (SalaDeEsperaCliente) this.vista;
@@ -118,6 +130,7 @@ public class ControladorCliente implements ActionListener, Runnable {
             
             
             Cliente.getInstancia().solicitudChat(nombre, Usuario.getInstance().getNombre());
+            this.nombreDestinatario=nombre;
             
             /*this.setVista(new Chat());
             Chat ventana = (Chat) this.vista; */
@@ -125,6 +138,8 @@ public class ControladorCliente implements ActionListener, Runnable {
 
         }
     }
+    
+    
     
     public void ventanaEspera() {
     	this.vista.cerrar();
@@ -156,12 +171,26 @@ public class ControladorCliente implements ActionListener, Runnable {
     }
     
     
-    public void ventanaChat() {
+    
+    
+    public boolean isSolicitante() {
+		return isSolicitante;
+	}
+
+	public void setSolicitante(boolean isSolicitante) {
+		this.isSolicitante = isSolicitante;
+	}
+
+	public void ventanaChat() {
     	this.vista.cerrar();
     	this.setVista(new Chat());
-    	this.comunicacion = new Thread(this);
-    	this.comunicacion.start();
     }
+	
+	public void actualizaChat(String nombre, String mensaje) {
+		Chat chat = (Chat) this.vista;
+		chat.getTextArea().append(nombre +": "+ mensaje + "\n");
+	}
+    
     
     public void cerrarVentana() {
     	System.out.println("cierro ventana");
@@ -171,8 +200,8 @@ public class ControladorCliente implements ActionListener, Runnable {
     
 
 
-	@Override
-	public void run() {
+	//@Override
+ /*	public void run() {
 		Chat vista = (Chat) this.vista;
 		try {
 			while (true ){
@@ -193,6 +222,6 @@ public class ControladorCliente implements ActionListener, Runnable {
 		}
 		finally {
 		}
-	}
+	} */
 	
 }

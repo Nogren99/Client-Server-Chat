@@ -18,6 +18,7 @@ import java.util.Iterator;
 import controlador.ControladorCliente;
 import controlador.ControladorServidor;
 import modelo.ConfirmacionSolicitud;
+import modelo.Mensaje;
 import modelo.MensajeCliente;
 import modelo.SolicitudMensaje;
 import modelo.Usuario;
@@ -175,6 +176,23 @@ public class Servidor implements Runnable {
                       	System.out.println("La rta de la confirmacion "+ confirmacion.isConfirmacion() + "llegó al server");
                       	flujoSalida.writeObject(confirmacion.isConfirmacion());
   
+                      } else if (object instanceof Mensaje){
+                    	  Mensaje mensaje = (Mensaje) object;
+                    	  System.out.println("El servidor recibio el mensaje "+ mensaje.toString());
+                    	  int puerto = Servidor.getInstancia().getClientes().get(mensaje.getNombreDestinatario());
+                    	  int i=0;
+                    	  
+                      	  while (i<sockets.size() && sockets.get(i).getPort()!=puerto) {
+                      		System.out.println("Soquet numero "+ i + " Puerto :" +sockets.get(i).getLocalPort());
+                      		i++;
+                      	  }
+                      	  
+                      	  System.out.println("Enviando mensaje "+ mensaje.toString() + "al cliente "+ mensaje.getNombreDestinatario());
+                      	  flujoSalida = new ObjectOutputStream(sockets.get(i).getOutputStream());
+                          flujoSalida.writeObject(mensaje);
+                      	  
+                    	  
+                    	  
                       } else {
                     	System.out.println("recibi cualquier cosa");
                     	System.out.println(object.toString());
