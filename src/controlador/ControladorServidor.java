@@ -10,7 +10,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import modelo.Usuario;
 import negocio.Servidor;
-import negocio.Sistema;
 import vista.Ivista;
 import vista.SistemaDeMensajeria;
 import vista.Bienvenido;
@@ -94,7 +93,6 @@ public class ControladorServidor implements ActionListener, Runnable {
     
     public void cerrarVentana() {
     	System.out.println("cierro ventana");
-    	Sistema.getInstancia().cerrarSockets();
     	this.comunicacion.interrupt();
     }
 

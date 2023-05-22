@@ -17,7 +17,6 @@ import javax.swing.JTextField;
 
 import modelo.MensajeCliente;
 import modelo.Usuario;
-import negocio.Sistema;
 import negocio.Cliente;
 import negocio.Servidor;
 import vista.Ivista;
@@ -204,7 +203,6 @@ public class ControladorCliente implements ActionListener {
 
 	public void cerrarVentana() {
 		System.out.println("cierro ventana");
-		Sistema.getInstancia().cerrarSockets();
 		this.comunicacion.interrupt();
 	}
 

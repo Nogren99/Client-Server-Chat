@@ -199,7 +199,7 @@ public class Cliente implements Runnable{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-	
+
 	}
 	
 	public void actualizarLista(String nombre) {
