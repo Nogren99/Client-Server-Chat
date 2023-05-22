@@ -153,7 +153,7 @@ public class Cliente implements Runnable{
         		// Lee el objeto HashMap del segundo ObjectInputStream
         		Object object =   hashMapInputStream.readObject();
         		
-        		if (object.getClass()==HashMap.class) {
+        		if (object.getClass()==HashMap.class) {     //Me llega un hashmap actualizado con todos los usuarios que tiene nuestro sistema para actualizar la lista
         			HashMap<String, Integer> clientesRecibidos = (HashMap<String, Integer>) object;
         		
 	        		System.out.println("recibi esto"+hashMapInputStream);
@@ -170,7 +170,7 @@ public class Cliente implements Runnable{
 	                }
 	                
 	                ControladorCliente.getInstancia().actualizaLista( (HashMap) clientesRecibidos);
-        		} else if (object.getClass()==SolicitudMensaje.class) {
+        		} else if (object.getClass()==SolicitudMensaje.class) {   //Me llega una solicitud de chat de otro usuario
         			SolicitudMensaje solicitud = (SolicitudMensaje) object;
         			//ObjectOutputStream flujoSalida = new ObjectOutputStream(this.socket.getOutputStream());
         			int dialogButton = JOptionPane.showConfirmDialog (null, solicitud.getNombrePropio() + " quiere iniciar una conversación contigo. ¿Aceptar?","WARNING", 0); //0 es si, 1 es no
@@ -183,7 +183,7 @@ public class Cliente implements Runnable{
         			} else { // no
         				paqueteDatos.writeObject(new ConfirmacionSolicitud(false,solicitud.getNombrePropio()));  //escribir con este o con flujoSalida???	
         			}
-        		} else if (object instanceof Boolean) {
+        		} else if (object instanceof Boolean) { //Me llega la confirmación de la solicitud de chat que envié anteriormenta
         			boolean bool = (boolean) object;
         			System.out.println("La rta de la confirmación "+ bool  + "llegó al cliente ");
         			if (bool) {
@@ -193,7 +193,7 @@ public class Cliente implements Runnable{
         			} else {
         				JOptionPane.showMessageDialog(null, "Tu solicitud ha sido rechazada :(");
         			}
-        		}else if (object instanceof Mensaje){
+        		}else if (object instanceof Mensaje){   //Me llega un mensaje
         			Mensaje mensaje = (Mensaje) object;
         			ControladorCliente.getInstancia().actualizaChat(mensaje.getNombreMio(), mensaje.getMensaje());
         			

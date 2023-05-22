@@ -150,24 +150,26 @@ public class ControladorCliente implements ActionListener {
     }
     
     public void actualizaLista(HashMap clientes) {
-    	SalaDeEsperaCliente ventana = (SalaDeEsperaCliente) this.vista;
-    	ventana.getModeloLista().clear();
-    	System.out.println("ahora viene el iterator");
-    	Iterator<Map.Entry<String, Integer>> iterator = clientes.entrySet().iterator();
-    	System.out.println("Entramos a Actualiza lista!! ");
+    	if (this.vista instanceof SalaDeEsperaCliente) {
+	    	SalaDeEsperaCliente ventana = (SalaDeEsperaCliente) this.vista;
+	    	ventana.getModeloLista().clear();
+	    	System.out.println("ahora viene el iterator");
+	    	Iterator<Map.Entry<String, Integer>> iterator = clientes.entrySet().iterator();
+	    	System.out.println("Entramos a Actualiza lista!! ");
+	    	
+	        while (iterator.hasNext()) {
+	            Map.Entry<String, Integer> entry = iterator.next();
+	            String nombre = entry.getKey();
+	            Integer puerto = entry.getValue();
+	            //System.out.println("Cliente: " + nombre + ", Puerto: " + puerto);
+	            
+	            if (!nombre.equals(Usuario.getInstance().getNombre()))
+	            	ventana.getModeloLista().addElement(nombre);
+	        	
+	        }
+	        ventana.repaint();
     	
-        while (iterator.hasNext()) {
-            Map.Entry<String, Integer> entry = iterator.next();
-            String nombre = entry.getKey();
-            Integer puerto = entry.getValue();
-            //System.out.println("Cliente: " + nombre + ", Puerto: " + puerto);
-            
-        	ventana.getModeloLista().addElement(nombre);
-        	
-        }
-        ventana.repaint();
-    	
-    	
+    	}
     }
     
     
