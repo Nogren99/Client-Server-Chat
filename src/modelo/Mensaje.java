@@ -3,11 +3,11 @@ package modelo;
 import java.io.Serializable;
 
 public class Mensaje implements Serializable {
-	String mensaje;
+	byte[] mensaje;
 	String nombreMio;
 	String nombreDestinatario;
 	
-	public String getMensaje() {
+	public byte[] getMensaje() {
 		return mensaje;
 	}
 	public String getNombreMio() {
@@ -17,9 +17,9 @@ public class Mensaje implements Serializable {
 		return nombreDestinatario;
 	}
 	
-	public Mensaje(String mensaje, String nombreMio, String nombreDestinatario) {
+	public Mensaje(byte[] textoEncriptado, String nombreMio, String nombreDestinatario) {
 		super();
-		this.mensaje = mensaje;
+		this.mensaje = textoEncriptado;
 		this.nombreMio = nombreMio;
 		this.nombreDestinatario = nombreDestinatario;
 	}

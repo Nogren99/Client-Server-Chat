@@ -21,17 +21,10 @@ import vista.SalaDeEspera;
 public class ControladorServidor implements ActionListener, Runnable {
 
 	private Ivista vista;
-	private WindowListener escuchaVentana;
-    private Sistema sistema = Sistema.getInstancia();
-    private Servidor servidor= Servidor.getInstancia();
-    private JTextField textField;
-    private String msj;
     private static ControladorServidor instancia;
     private Thread comunicacion;
     
-    public void setMsj(String msj) {
-		this.msj = msj;
-	}
+
     
     public static ControladorServidor getInstancia() {
         if (instancia == null)
@@ -55,51 +48,36 @@ public class ControladorServidor implements ActionListener, Runnable {
         this.vista.mostrar();
     }
     
+
+
+    /**
+     *Metodo que se encarga de escuchar la interaccion del servidor
+     *Se ingresa el puerto por pantalla y se toma el ip de quien lo inicia
+     *Luego se inicia el hilo correspondiente al servidor
+     */
     @Override
     public void actionPerformed(ActionEvent e) {
         String comando = e.getActionCommand();
-        //System.out.println("Comando: " + comando);
        
         if (comando.equalsIgnoreCase("Iniciar Sesión")) {
         	Inicio ventana = (Inicio) this.vista;
         	
+        	//Ingreso datos del servidor
         	int puerto = Integer.parseInt( ventana.getTextField_1().getText() );
-        	String nombre = ventana.getTextField().getText();
-        	
-        	//esto no va en Usuario. cambiar a server
-        	Usuario.getInstance().setNombre(nombre);
         	Usuario.getInstance().setPuerto(puerto);
-        	
-        	System.out.println("Inicio en puerto: "+ puerto+" username: "+nombre);
         	try {
         		Usuario.getInstance().setIp(InetAddress.getLocalHost().getHostAddress());
-				System.out.println("Inicio en ip: "+ Usuario.getInstance().getIp());
 			}catch (UnknownHostException e1) {
-				// TODO Auto-generated catch block
 				e1.printStackTrace();
-			}finally { } 
-
+			}
+        	System.out.println("Inicio en ip: "+ Usuario.getInstance().getIp() + "y en puerto: "+puerto);
+        	
+        	//Inicio hilo para que el servidor empieze a escuchar clientes
             Thread hilo = new Thread(Servidor.getInstancia());
             hilo.start();
-
         	this.vista.cerrar();
-        	//this.setVista(new Chat());        	
-
-        
-        } else if (comando.equalsIgnoreCase("Enviar")){
-        	Chat ventana = (Chat) this.vista;
-        	String msj = ventana.getTextField().getText();
-        	System.out.println("mensaje: "+msj);
         	
-        	try {
-                if (msj != null && !msj.isEmpty()) {
-                    this.sistema.enviarMensaje(msj);
-                    ventana.getTextArea().append(Usuario.getInstance().getNombre()+" : " +msj+"\n");
-                }
-            } catch (IOException ex) {
-                throw new RuntimeException(ex);
-            }
-        }
+        } 
     }
     
     public void ventanaEspera() {

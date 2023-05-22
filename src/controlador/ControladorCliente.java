@@ -32,161 +32,163 @@ public class ControladorCliente implements ActionListener {
 
 	private Ivista vista;
 	private WindowListener escuchaVentana;
-    private Sistema sistema = Sistema.getInstancia();
-    private Cliente cliente = Cliente.getInstancia();
-    private JTextField textField;
-    private String msj;
-    private boolean isSolicitante;
-    private static ControladorCliente instancia;
-    private Thread comunicacion;
-    private String nombreDestinatario;
-    private MensajeCliente paquete;
-    private String nombreSolicitante;
-    
-    public void setMsj(String msj) {
+	private Sistema sistema = Sistema.getInstancia();
+	private Cliente cliente = Cliente.getInstancia();
+	private JTextField textField;
+	private String msj;
+	private boolean isSolicitante;
+	private static ControladorCliente instancia;
+	private Thread comunicacion;
+	private String nombreDestinatario;
+	private MensajeCliente paquete;
+	private String nombreSolicitante;
+
+	public void setMsj(String msj) {
 		this.msj = msj;
 	}
-    
-    public static ControladorCliente getInstancia() {
-        if (instancia == null)
-            instancia = new ControladorCliente();
-        return instancia;
-    }
+
+	public static ControladorCliente getInstancia() {
+		if (instancia == null)
+			instancia = new ControladorCliente();
+		return instancia;
+	}
 
 	public ControladorCliente() {
-        this.vista = new Bienvenido();
-        this.vista.setActionListener(this);
-        this.vista.mostrar();
-    }
-    
-    public Ivista getVista(){
-        return vista;
-    }
+		this.vista = new Bienvenido();
+		this.vista.setActionListener(this);
+		this.vista.mostrar();
+	}
 
-    private void setVista(Ivista vista) {
-        this.vista=vista;
-        this.vista.setActionListener(this);
-        this.vista.mostrar();
-    }
-    
-    @Override
-    public void actionPerformed(ActionEvent e) {
-        String comando = e.getActionCommand();
-        //System.out.println("Comando: " + comando);
-       
-        if (comando.equalsIgnoreCase("Conectarse")) {
-        	Bienvenido ventana = (Bienvenido) this.vista;
-        	
-        	//MIS DATOS:
-        	Usuario.getInstance().setNombre(ventana.getTextField_2().getText());
-        	try {
+	public Ivista getVista() {
+		return vista;
+	}
+
+	private void setVista(Ivista vista) {
+		this.vista = vista;
+		this.vista.setActionListener(this);
+		this.vista.mostrar();
+	}
+
+	/**
+	 *Metodo que se encarga de escuchar la interaccion del cliente
+	 *
+	 *<b> Conectarse: </b>
+	 *El cliente ingresa sus datos y los del servidor al cual desea conectarse
+	 *
+	 *<b> Enviar: </b>
+	 *Dentro de la ventana de chat, cada vez que el usuario envia un mensaje, se borra del campo de texto lo que escribio,
+	 *luego se imprime por su pantalla y dependiendo de quien envia el mensaje (solicitante o solicitado)es el orden de los parametros
+	 *que se envian al metodo enviarMensaje
+	 *
+	 *<b> Conectar: </b>
+	 *Se selecciona un cliente de la lista y se le solicita iniciar una conversacion
+	 *si no hay ningun cliente seleccionado no es posible enviar dicha solicitud
+	 *
+	 *<b> Cerrar: </b>
+	 *Cierra la conversacion actualy notifica al otro usuario que se cerro la conversacion.
+	 *devuelve al cliente a la ventana de sala de espera cliente
+	 */
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		String comando = e.getActionCommand();
+
+		if (comando.equalsIgnoreCase("Conectarse")) {
+			Bienvenido ventana = (Bienvenido) this.vista;
+
+			// MIS DATOS:
+			Usuario.getInstance().setNombre(ventana.getTextField_2().getText());
+			try {
 				Usuario.getInstance().setIp(InetAddress.getLocalHost().getHostAddress());
 			} catch (UnknownHostException e1) {
 				e1.printStackTrace();
 			}
-        	Usuario.getInstance().setPuerto( Integer.parseInt(ventana.getTextField_1().getText()));
-        	
-        	this.cliente.getInstancia().setDatos(Usuario.getInstance().getIp(),Usuario.getInstance().getPuerto(),Usuario.getInstance().getNombre());
-        	
-        	//DATOS DEL SERVIDOR
-        	String ip = ventana.getTextFieldIPSV().getText();
-        	int puerto = Integer.parseInt( ventana.getTextFieldPuertoSV().getText());
-        	System.out.println("me conecto a:"+ip+ "puerto"+puerto);
-        	
-        	System.out.println("soy"+Usuario.getInstance().getNombre()+Usuario.getInstance().getIp()+Usuario.getInstance().getPuerto());
-        	System.out.println("Datos del servier"+ip+" puerto "+puerto);
-        	
-        	
-        	
-        	//Conectar al servidor
-        	this.cliente.conectar(ip, puerto);
-        	//this.cliente.esperarConexion();
-        	this.vista.cerrar();
-        	
-        //====VENTANA DE CHAT====
-        }else if (comando.equalsIgnoreCase("Enviar")){
-        	Chat ventana = (Chat) this.vista;
-        	String msj = ventana.getTextField().getText();
-        	ventana.getTextField().setText("");
-        	System.out.println("mensaje: "+msj);
-        	
-        	if (msj != null && !msj.isEmpty()) {
-        		ventana.getTextArea().append(Usuario.getInstance().getNombre()+"(Tu) : " +msj+"\n");
-        		System.out.println("issolicitante:  "+ this.isSolicitante);
-        		if (this.isSolicitante) {	
-        			//enviarMensaje(mensaje,mi nombre, nombredestinatario)
-        			Cliente.getInstancia().enviarMensaje(msj, Usuario.getInstance().getNombre(), this.nombreDestinatario);
-        		} else if (this.isSolicitante==false) {
-        			Cliente.getInstancia().enviarMensaje(msj, Usuario.getInstance().getNombre(), Cliente.getInstancia().getNombreInterlocutor());
-        		}
-        		
-			   // this.cliente.getInstancia().enviarMensaje(msj);
-			    
+			Usuario.getInstance().setPuerto(Integer.parseInt(ventana.getTextField_1().getText()));
+
+			this.cliente.getInstancia().setDatos(Usuario.getInstance().getIp(), Usuario.getInstance().getPuerto(),Usuario.getInstance().getNombre());
+
+			// DATOS DEL SERVIDOR
+			String ip = ventana.getTextFieldIPSV().getText();
+			int puerto = Integer.parseInt(ventana.getTextFieldPuertoSV().getText());
+			System.out.println("me conecto a:" + ip + "puerto" + puerto);
+
+			System.out.println("soy" + Usuario.getInstance().getNombre() + Usuario.getInstance().getIp()
+					+ Usuario.getInstance().getPuerto());
+			System.out.println("Datos del servier" + ip + " puerto " + puerto);
+
+			// Conectar al servidor
+			this.cliente.conectar(ip, puerto);
+			this.vista.cerrar();
+
+			// ====VENTANA DE CHAT====
+		} else if (comando.equalsIgnoreCase("Enviar")) {
+			Chat ventana = (Chat) this.vista;
+			String msj = ventana.getTextField().getText();
+			ventana.getTextField().setText("");
+
+			if (msj != null && !msj.isEmpty()) {
+				ventana.getTextArea().append(Usuario.getInstance().getNombre() + " (Tu) : " + msj + "\n");
+				if (this.isSolicitante) {
+					Cliente.getInstancia().enviarMensaje(msj, Usuario.getInstance().getNombre(),this.nombreDestinatario);
+				} else if (this.isSolicitante == false) {
+					Cliente.getInstancia().enviarMensaje(msj, Usuario.getInstance().getNombre(),Cliente.getInstancia().getNombreInterlocutor());
+				}
+
 			}
-        } else if(comando.equalsIgnoreCase("Conectar")) {
-        	SalaDeEsperaCliente vistaSeleccion = (SalaDeEsperaCliente) this.vista;
-        	//anular boton sin seleccion
-        	String nombre = (String) vistaSeleccion.getList().getSelectedValue();
-        	System.out.println("Nombre seleccionado: "+ nombre);
-            
-            
-            Cliente.getInstancia().solicitudChat(nombre, Usuario.getInstance().getNombre());
-            this.nombreDestinatario=nombre;
-            
-            /*this.setVista(new Chat());
-            Chat ventana = (Chat) this.vista; */
+			//====Lista de Usuarios conectados al servidor====
+		} else if (comando.equalsIgnoreCase("Conectar")) {
+			SalaDeEsperaCliente vistaSeleccion = (SalaDeEsperaCliente) this.vista;
+			// anular boton sin seleccion
+			String nombre = (String) vistaSeleccion.getList().getSelectedValue();
+
+			Cliente.getInstancia().solicitudChat(nombre, Usuario.getInstance().getNombre());
+			this.nombreDestinatario = nombre;
 
 
-        } else if (comando.equalsIgnoreCase("Cerrar")) {
-        	this.vista.cerrar();
-        	this.setVista(new SalaDeEsperaCliente());
-        	if (this.isSolicitante())
-        		Cliente.getInstancia().cerrarConexion(this.nombreDestinatario);
-        	else
-        		Cliente.getInstancia().cerrarConexion(this.nombreSolicitante);
-        	Cliente.getInstancia().actualizarLista(Usuario.getInstance().getNombre());
-        	
-        	
-        }
-    }
-    
-    
-    
-    public void ventanaEspera() {
-    	this.vista.cerrar();
-    	this.setVista(new SalaDeEsperaCliente());
-    	Thread hilo = new Thread(Cliente.getInstancia());
-        hilo.start();
-    	//this.cliente.esperarConexion();
-    }
-    
-    public void actualizaLista(HashMap clientes) {
-    	if (this.vista instanceof SalaDeEsperaCliente) {
-	    	SalaDeEsperaCliente ventana = (SalaDeEsperaCliente) this.vista;
-	    	ventana.getModeloLista().clear();
-	    	System.out.println("ahora viene el iterator");
-	    	Iterator<Map.Entry<String, Integer>> iterator = clientes.entrySet().iterator();
-	    	System.out.println("Entramos a Actualiza lista!! ");
-	    	
-	        while (iterator.hasNext()) {
-	            Map.Entry<String, Integer> entry = iterator.next();
-	            String nombre = entry.getKey();
-	            Integer puerto = entry.getValue();
-	            //System.out.println("Cliente: " + nombre + ", Puerto: " + puerto);
-	            
-	            if (!nombre.equals(Usuario.getInstance().getNombre()))
-	            	ventana.getModeloLista().addElement(nombre);
-	        	
-	        }
-	        ventana.repaint();
-    	
-    	}
-    }
-    
-    
-    
-    
-    public boolean isSolicitante() {
+		} else if (comando.equalsIgnoreCase("Cerrar")) {
+			this.vista.cerrar();
+			this.setVista(new SalaDeEsperaCliente());
+			if (this.isSolicitante())
+				Cliente.getInstancia().cerrarConexion(this.nombreDestinatario);
+			else
+				Cliente.getInstancia().cerrarConexion(this.nombreSolicitante);
+			Cliente.getInstancia().actualizarLista(Usuario.getInstance().getNombre());
+
+		}
+	}
+
+	public void ventanaEspera() {
+		this.vista.cerrar();
+		this.setVista(new SalaDeEsperaCliente());
+		Thread hilo = new Thread(Cliente.getInstancia());
+		hilo.start();
+	}
+
+	/**
+	 * @param clientes
+	 * 
+	 * Recibe un HashMap de clientes y actualiza la lista que es mostrada en la ventana 
+	 * donde el cliente puede esperar una conexion y/o solicitar una
+	 */
+	public void actualizaLista(HashMap clientes) {
+		if (this.vista instanceof SalaDeEsperaCliente) {
+			SalaDeEsperaCliente ventana = (SalaDeEsperaCliente) this.vista;
+			ventana.getModeloLista().clear();
+			Iterator<Map.Entry<String, Integer>> iterator = clientes.entrySet().iterator();
+
+			while (iterator.hasNext()) {
+				Map.Entry<String, Integer> entry = iterator.next();
+				String nombre = entry.getKey();
+				Integer puerto = entry.getValue();
+
+				if (!nombre.equals(Usuario.getInstance().getNombre()))
+					ventana.getModeloLista().addElement(nombre);
+
+			}
+			ventana.repaint();
+		}
+	}
+
+	public boolean isSolicitante() {
 		return isSolicitante;
 	}
 
@@ -195,62 +197,38 @@ public class ControladorCliente implements ActionListener {
 	}
 
 	public void ventanaChatSolicitante() {
-    	this.vista.cerrar();
-    	this.setVista(new Chat());
-    	Chat chat = (Chat) this.vista;
-    	chat.getLblChatCon().setText("Chat con: "+ this.nombreDestinatario);
-    }
-	
+		this.vista.cerrar();
+		this.setVista(new Chat());
+		Chat chat = (Chat) this.vista;
+		chat.getLblChatCon().setText("Chat con: " + this.nombreDestinatario);
+	}
+
 	public void ventanaChatSolicitado(String nombre) {
-    	this.vista.cerrar();
-    	this.setVista(new Chat());
-    	this.nombreSolicitante=nombre;
-    	Chat chat = (Chat) this.vista;
-    	chat.getLblChatCon().setText("Chat con: "+ nombre);
-    }
-	
+		this.vista.cerrar();
+		this.setVista(new Chat());
+		this.nombreSolicitante = nombre;
+		Chat chat = (Chat) this.vista;
+		chat.getLblChatCon().setText("Chat con: " + nombre);
+	}
+
 	public void actualizaChat(String nombre, String mensaje) {
 		Chat chat = (Chat) this.vista;
-		chat.getTextArea().append(nombre +": "+ mensaje + "\n");
+		chat.getTextArea().append(nombre + " : " + mensaje + "\n");
 	}
-    
-    
-    public void cerrarVentana() {
-    	System.out.println("cierro ventana");
-    	Sistema.getInstancia().cerrarSockets();
-    	this.comunicacion.interrupt();
-    }
-    
-    public void abrirVentanaEspera() {
-    	this.vista.cerrar();
-    	JOptionPane.showMessageDialog(null, "Tu contacto terminó la conexión!");
-    	this.setVista(new SalaDeEsperaCliente());
-    	Cliente.getInstancia().actualizarLista(Usuario.getInstance().getNombre());
-    }
+
+	public void cerrarVentana() {
+		System.out.println("cierro ventana");
+		Sistema.getInstancia().cerrarSockets();
+		this.comunicacion.interrupt();
+	}
+
+	public void abrirVentanaEspera() {
+		this.vista.cerrar();
+		JOptionPane.showMessageDialog(null, "Tu contacto terminó la conexión!");
+		this.setVista(new SalaDeEsperaCliente());
+		Cliente.getInstancia().actualizarLista(Usuario.getInstance().getNombre());
+	}
 
 
-	//@Override
- /*	public void run() {
-		Chat vista = (Chat) this.vista;
-		try {
-			while (true ){
-				MensajeCliente paquete =  this.cliente.getInstancia().recibirMensaje();
-				//Si el mensaje es null es debido a que el otro usuario cerro la comunicacion
-				if (paquete.getMsj()==null) 
-	                break;
-				else {
-					vista.getTextArea().setEditable(true);
-					//System.out.println("mensaje de:"+Sistema.getInstancia().getIn().readLine());
-					System.out.println("el mensaje:"+paquete.getMsj());
-					vista.getTextArea().append("Tu contacto ( "+paquete.getName()+ " ) : "+paquete.getMsj()+"\n");
-					vista.getTextArea().setEditable(false);
-				}
-			}
-			this.vista.cerrar();
-			this.cerrarVentana();
-		}
-		finally {
-		}
-	} */
-	
+
 }

@@ -23,13 +23,16 @@ import modelo.MensajeCliente;
 import modelo.SolicitudMensaje;
 import modelo.Usuario;
 
+import java.util.Base64;
+import javax.crypto.Cipher;
+import javax.crypto.spec.SecretKeySpec;
+
 public class Cliente implements Runnable{
 	private static Cliente instancia;
     private Socket socket;
     private MensajeCliente paqueteMsj = new MensajeCliente();
     private ObjectOutputStream flujoSalida;
     private ObjectInputStream flujoEntrada;
-    private MensajeCliente paqueteRecibido;
     private String nombreInterlocutor;
     ObjectOutputStream paqueteDatos;
     private boolean aceptada = false;
@@ -41,22 +44,10 @@ public class Cliente implements Runnable{
 	    return instancia;
 	}
 
-    public void conectar(String host, int puerto) { //que cuando lo conecte envie un objeto al servidor con los datos del cliente que se unio?
-    	//asi podemos armar la lista y conocer su puerto (el puerto e ip que usamos en este metodo es del servidor)
-    	//out.println(objeto con datos)
-    	//esto asi el servidor conoce el puerto del cliente al que quiero conectarme y poder hacer el envio del mensaje
+    public void conectar(String host, int puerto) { 
         try {
-        	System.out.println("0");
             this.socket = new Socket(host, 1); //acordarse q el server esta harcodeado en 1
-            System.out.println("socket "+socket + "histo: "+host+" puerot "+puerto);
-            
-            
-           // this.flujoSalida = new ObjectOutputStream(socket.getOutputStream());
-          //  this.flujoEntrada = new ObjectInputStream(socket.getInputStream());
-            
-            
-            
-            System.out.println("2");
+            System.out.println("Mis datos : socket "+socket + "histo: "+host+" puerot "+puerto);
             
             paqueteDatos = new ObjectOutputStream(socket.getOutputStream());
             MensajeCliente datos = new MensajeCliente();
@@ -67,10 +58,7 @@ public class Cliente implements Runnable{
             paqueteDatos.writeObject(datos);
             paqueteDatos.flush();
             
-            //this.flujoSalida = new ObjectOutputStream(socket.getOutputStream());
-            System.out.println("SALIDITA1 "+flujoSalida);
             this.flujoEntrada = new ObjectInputStream(socket.getInputStream());
-            System.out.println("3");
             ControladorCliente.getInstancia().ventanaEspera();//ventana sala de espera con listita
         } catch (IOException e) {
             System.out.println(e.getMessage());
@@ -80,42 +68,36 @@ public class Cliente implements Runnable{
     public void enviarMensaje(String mensaje, String nombre, String nombreDestinatario) {
         try {
         	System.out.println("Enviando mensaje "+ mensaje + "al servidor");
-			//this.paqueteDatos = new ObjectOutputStream(socket.getOutputStream());
-			paqueteDatos.writeObject(new Mensaje(mensaje,nombre,nombreDestinatario));
-			paqueteDatos.flush();
-			//flujoSalida.flush();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}   
-    }
-    /*
-    public void esperarConexion() {
-        try {
-            while (true) {
-                Object objeto = flujoEntrada.readObject();
-                if (objeto instanceof MensajeCliente) {
-                    MensajeCliente mensaje = (MensajeCliente) objeto;
-                    System.out.println("Mensaje recibido: " + mensaje.getMsj());
-                    // Procesar el mensaje recibido
-                }
-            }
-        } catch (IOException | ClassNotFoundException e) {
-            // Manejar la excepción apropiadamente
-        }
-    }*/
-    
+        	
+        	//encriptacion
+    		byte[] textoEncriptado = encriptar("12345678", mensaje, "DES");
+    		String textoEncriptadoBase64 = Base64.getEncoder().encodeToString(textoEncriptado);
+    		System.out.println(textoEncriptadoBase64);
+    		textoEncriptado = Base64.getDecoder().decode(textoEncriptadoBase64);
 
-  /*  public MensajeCliente recibirMensaje() {
-        try {
-        	this.flujoEntrada = new ObjectInputStream(socket.getInputStream());
-        	paqueteRecibido = (MensajeCliente) this.flujoEntrada.readObject();
-            return paqueteRecibido;
-        } catch (IOException | ClassNotFoundException e) {
-            // Manejar la excepción apropiadamente
-        }
-        return null;
-    } */
+    		paqueteDatos.writeObject(new Mensaje(textoEncriptado,nombre,nombreDestinatario));
+    		paqueteDatos.flush();
+
+    	} catch (Exception e) {
+    		// TODO Auto-generated catch block
+    		e.printStackTrace();
+    	}   
+    }
+
+    public static byte[] encriptar(String pass, String texto, String algoritmo) throws Exception {
+    	java.security.Key key = new SecretKeySpec(pass.getBytes(), algoritmo);
+    	Cipher cipher = Cipher.getInstance(algoritmo);
+    	cipher.init(Cipher.ENCRYPT_MODE, key);
+    	return cipher.doFinal(texto.getBytes());
+    }
+
+    public static String desencriptar(String pass, byte[] encriptado, String algoritmo) throws Exception {
+    	java.security.Key key = new SecretKeySpec(pass.getBytes(), algoritmo);
+    	Cipher cipher = Cipher.getInstance(algoritmo);
+    	cipher.init(Cipher.DECRYPT_MODE, key);
+    	byte[] bytes = cipher.doFinal(encriptado);
+    	return new String(bytes);
+    }
 
     public void desconectar() {
         try {
@@ -127,9 +109,6 @@ public class Cliente implements Runnable{
         }
     }
     
-
-
-
 	public void setDatos(String ip, int puerto, String nombre) {
 		this.paqueteMsj.setIp(ip);
 		this.paqueteMsj.setPuerto(puerto);
@@ -137,53 +116,36 @@ public class Cliente implements Runnable{
 		
 	}
 	
-	
-	
     public Socket getSocket() {
 		return socket;
 	}
 
 	public void run() {
         try {
-        	System.out.println("hoolaaaaa "+ this.socket.getInputStream());
-    		//ObjectInputStream hashMapInputStream = new ObjectInputStream(this.socket.getInputStream());
-    		System.out.println("llegpo");
         	while (true) {
         		
-				// Usa el objeto cliente recibido según sea necesario
-        		System.out.println("\n ====================================");
         		ObjectInputStream hashMapInputStream = new ObjectInputStream(this.socket.getInputStream());
-
-        		// Lee el objeto HashMap del segundo ObjectInputStream
         		Object object =   hashMapInputStream.readObject();
         		
         		if (object.getClass()==HashMap.class) {     //Me llega un hashmap actualizado con todos los usuarios que tiene nuestro sistema para actualizar la lista
-        			HashMap<String, Integer> clientesRecibidos = (HashMap<String, Integer>) object;
-        		
-	        		System.out.println("recibi esto"+hashMapInputStream);
-	
-	        		System.out.println("barrilete cosmico el diego"+clientesRecibidos);
-	        		
+        			HashMap<String, Integer> clientesRecibidos = (HashMap<String, Integer>) object;	
 	                Iterator<Map.Entry<String, Integer>> iterator = clientesRecibidos.entrySet().iterator();
 	
 	                while (iterator.hasNext()) {
 	                    Map.Entry<String, Integer> entry = iterator.next();
 	                    String nombre = entry.getKey();
 	                    Integer puerto = entry.getValue();
-	                    System.out.println("Cliente: " + nombre + ", Puerto: " + puerto);
+	                    //System.out.println("Cliente: " + nombre + ", Puerto: " + puerto);
 	                }
-	                
 	                ControladorCliente.getInstancia().actualizaLista( (HashMap) clientesRecibidos);
+	                
         		} else if (object.getClass()==SolicitudMensaje.class) {   //Me llega una solicitud de chat de otro usuario
         			SolicitudMensaje solicitud = (SolicitudMensaje) object;
-        			System.out.println("Estoy en llamada: "+ this.estoyEnLlamada);
         			if (this.estoyEnLlamada) {
         				paqueteDatos.writeObject(new ClienteNoDisponible(solicitud.getNombrePropio()));
         			} else {
-	        			//ObjectOutputStream flujoSalida = new ObjectOutputStream(this.socket.getOutputStream());
 	        			int dialogButton = JOptionPane.showConfirmDialog (null, solicitud.getNombrePropio() + " quiere iniciar una conversación contigo. ¿Aceptar?","Solicitud entrante", 0); //0 es si, 1 es no
 	        			if (dialogButton ==0) { // si
-	        				System.out.println("CONFIRMADO PAPA");
 	        				ControladorCliente.getInstancia().setSolicitante(false);
 	        				this.nombreInterlocutor=solicitud.getNombrePropio();
 	        				paqueteDatos.writeObject(new ConfirmacionSolicitud(true,solicitud.getNombrePropio()));    //escribir con este o con flujoSalida???				
@@ -195,7 +157,6 @@ public class Cliente implements Runnable{
         			}
         		} else if (object instanceof Boolean) { //Me llega la confirmación de la solicitud de chat que envié anteriormenta
         			boolean bool = (boolean) object;
-        			System.out.println("La rta de la confirmación "+ bool  + "llegó al cliente ");
         			if (bool) {
         				ControladorCliente.getInstancia().setSolicitante(true);
         				this.aceptada=true;
@@ -206,7 +167,9 @@ public class Cliente implements Runnable{
         			}
         		}else if (object instanceof Mensaje){   //Me llega un mensaje
         			Mensaje mensaje = (Mensaje) object;
-        			ControladorCliente.getInstancia().actualizaChat(mensaje.getNombreMio(), mensaje.getMensaje());
+        			//lo desencripto
+        			String textoOriginal = desencriptar("12345678", mensaje.getMensaje(), "DES");
+        			ControladorCliente.getInstancia().actualizaChat(mensaje.getNombreMio(), textoOriginal);
         			
         		} else if (object instanceof ClienteNoDisponible){
         			JOptionPane.showMessageDialog(null, "El usuario no está disponible!");
@@ -223,6 +186,9 @@ public class Cliente implements Runnable{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} finally {} 
@@ -262,8 +228,6 @@ public class Cliente implements Runnable{
 			e.printStackTrace();
 		}
 	}
-	
-	
 
 	public String getNombreInterlocutor() {
 		return nombreInterlocutor;
@@ -272,7 +236,5 @@ public class Cliente implements Runnable{
 	public boolean isAceptada() {
 		return aceptada;
 	}
-	
-	
 	
 }

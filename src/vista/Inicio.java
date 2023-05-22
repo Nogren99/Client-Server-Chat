@@ -29,8 +29,6 @@ public class Inicio extends JFrame implements Ivista {
 	private JPanel panel_7;
 	private JPanel panel_8;
 	private JLabel lblNewLabel;
-	private JLabel lblNewLabel_1;
-	private JTextField textField;
 	private JButton btnNewButton;
 	private JPanel panel_10;
 	private JPanel panel_11;
@@ -146,14 +144,6 @@ public class Inicio extends JFrame implements Ivista {
 		this.panel_6.setBackground(new Color(195, 222, 214));
 		this.panel_2.add(this.panel_6);
 		
-		this.lblNewLabel_1 = new JLabel("Nombre usuario");
-		this.lblNewLabel_1.setFont(new Font("Segoe UI Historic", Font.PLAIN, 12));
-		this.panel_6.add(this.lblNewLabel_1);
-		
-		this.textField = new JTextField();
-		this.panel_6.add(this.textField);
-		this.textField.setColumns(10);
-		
 		this.panel_7 = new JPanel();
 		this.panel_2.add(this.panel_7);
 		this.panel_7.setLayout(new GridLayout(2, 0, 0, 0));
@@ -204,9 +194,7 @@ public class Inicio extends JFrame implements Ivista {
 		return textField_1;
 	}
 	
-	public JTextField getTextField() {
-		return textField;
-	}
+
 
 	public void setTextField_1(JTextField textField_1) {
 		this.textField_1 = textField_1;
