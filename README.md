@@ -6,6 +6,11 @@
 
 
 Se construyó un sistema de mensajería Cliente-Servidor el cual sigue las características brindadas por la cátedra de Análisis y Diseño de Sistemas 2:
+
+* Una vez iniciada una sesión entre dos usuarios, los mismos pueden intercambiar toda la cantidad de mensajes que quieran hasta que uno de los dos participantes cierre la sesión.
+* Para iniciar un diálogo, el receptor debe estar en modo escucha. Es decir, a la espera de que otro usuario quiera establecer el diálogo con el.
+* Solo se permite una única sesión en simultáneo. Un usuario no puede tener más de un diálogo a la vez.
+* Para comenzar una sesión, el usuario iniciador debe ingresar la dirección IP y puerto que corresponde al usuario con el que quiere establecer el diálogo.
 * Todos los mensajes deben pasar por el servidor. Cuando se quiere enviar un mensaje a un usuario, el mensaje es enviado al servidor, el cual luego envía elmensaje a la aplicación destino.
 * Las aplicaciones de chat, deben registrarse primero en el servidor para poder luego establecer una conversación con otra instancia de la aplicación de chat.
 * Los mensajes ingresados por los usuarios deben estar encriptados de extremo a extremo (Se encripta en la aplicación donde se escribe el mensaje y se desencripta en la aplicación destino).
@@ -17,16 +22,16 @@ Se optó por utilizar una arquitectura MVC (modelo, vista, controlador) la cual 
 * Reutilización de los componentes.
 
 # ¿Como utilizar la aplicacion?
-1.Descargue los archivos ejecutables .jar que se encuentran dentro de la carpeta Aplicación.  
-2.Inicie una instancia de la aplicacion Server.jar e ingrese un puerto de preferencia,por defecto, al servidor se conectara mediante su ip.  
-3.Inicie una o mas instancias de la aplicacion Cliente.jar.  
-4.En cada una de ellas deberá completar con sus datos (nombre, ip y puerto) y los datos del servidor para poder conectarse al mismo mediante el boton "Conectarse".  
-5.Luego de conectarse podrá visualizar una lista con todos los usuarios conectados a su servidor.  
-6.Ahora mismo usted se encuentra a la escucha de solicitudes, pudiendo tambien enviar solicitudes a los otros usuarios.  
-7.Al recibir una solicitud usted tiene la posibilidad de aceptarla o rechazarla, en caso de aceptarla, o de enviar una solicitud que es aceptada, será redirigido a la ventana de chat.  
-8.Mediante el botón "enviar" se enviarán los mensajes ingresados en el área junto al mismo botón.  
-9.En cualquier momento puede presionar el boton "cerrar" para finalizar la comunicacion.  
-6.Al cerrar una de las instancias de chat, la del otro usuario se cerrará automáticamente.  
+1. Descargue los archivos ejecutables .jar que se encuentran dentro de la carpeta Aplicación.  
+2. Inicie una instancia de la aplicacion Server.jar e ingrese un puerto de preferencia,por defecto, al servidor se conectara mediante su ip.  
+3. Inicie una o mas instancias de la aplicacion Cliente.jar.  
+4. En cada una de ellas deberá completar con sus datos (nombre, ip y puerto) y los datos del servidor para poder conectarse al mismo mediante el boton "Conectarse".  
+5. Luego de conectarse podrá visualizar una lista con todos los usuarios conectados a su servidor.  
+6. Ahora mismo usted se encuentra a la escucha de solicitudes, pudiendo tambien enviar solicitudes a los otros usuarios.  
+7. Al recibir una solicitud usted tiene la posibilidad de aceptarla o rechazarla, en caso de aceptarla, o de enviar una solicitud que es aceptada, será redirigido a la ventana de chat.  
+8. Mediante el botón "enviar" se enviarán los mensajes ingresados en el área junto al mismo botón.  
+9. En cualquier momento puede presionar el boton "cerrar" para finalizar la comunicacion.  
+10. Al cerrar una de las instancias de chat, la del otro usuario se cerrará automáticamente.  
   
   
 <hr>
