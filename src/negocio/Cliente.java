@@ -14,6 +14,7 @@ import java.util.Map;
 import javax.swing.JOptionPane;
 
 import controlador.ControladorCliente;
+import modelo.ClienteNoDisponible;
 import modelo.ConfirmacionSolicitud;
 import modelo.Mensaje;
 import modelo.MensajeCliente;
@@ -30,6 +31,7 @@ public class Cliente implements Runnable{
     private String nombreInterlocutor;
     ObjectOutputStream paqueteDatos;
     private boolean aceptada = false;
+    private boolean estoyEnLlamada=false;
     
 	public static Cliente getInstancia() {
 		if (instancia == null)
@@ -172,16 +174,22 @@ public class Cliente implements Runnable{
 	                ControladorCliente.getInstancia().actualizaLista( (HashMap) clientesRecibidos);
         		} else if (object.getClass()==SolicitudMensaje.class) {   //Me llega una solicitud de chat de otro usuario
         			SolicitudMensaje solicitud = (SolicitudMensaje) object;
-        			//ObjectOutputStream flujoSalida = new ObjectOutputStream(this.socket.getOutputStream());
-        			int dialogButton = JOptionPane.showConfirmDialog (null, solicitud.getNombrePropio() + " quiere iniciar una conversación contigo. ¿Aceptar?","WARNING", 0); //0 es si, 1 es no
-        			if (dialogButton ==0) { // si
-        				System.out.println("CONFIRMADO PAPA");
-        				ControladorCliente.getInstancia().setSolicitante(false);
-        				this.nombreInterlocutor=solicitud.getNombrePropio();
-        				paqueteDatos.writeObject(new ConfirmacionSolicitud(true,solicitud.getNombrePropio()));    //escribir con este o con flujoSalida???				
-        				ControladorCliente.getInstancia().ventanaChat(); 
-        			} else { // no
-        				paqueteDatos.writeObject(new ConfirmacionSolicitud(false,solicitud.getNombrePropio()));  //escribir con este o con flujoSalida???	
+        			System.out.println("Estoy en llamada: "+ this.estoyEnLlamada);
+        			if (this.estoyEnLlamada) {
+        				paqueteDatos.writeObject(new ClienteNoDisponible(solicitud.getNombrePropio()));
+        			} else {
+	        			//ObjectOutputStream flujoSalida = new ObjectOutputStream(this.socket.getOutputStream());
+	        			int dialogButton = JOptionPane.showConfirmDialog (null, solicitud.getNombrePropio() + " quiere iniciar una conversación contigo. ¿Aceptar?","WARNING", 0); //0 es si, 1 es no
+	        			if (dialogButton ==0) { // si
+	        				System.out.println("CONFIRMADO PAPA");
+	        				ControladorCliente.getInstancia().setSolicitante(false);
+	        				this.nombreInterlocutor=solicitud.getNombrePropio();
+	        				paqueteDatos.writeObject(new ConfirmacionSolicitud(true,solicitud.getNombrePropio()));    //escribir con este o con flujoSalida???				
+	        				ControladorCliente.getInstancia().ventanaChat(); 
+	        				this.estoyEnLlamada=true;
+	        			} else { // no
+	        				paqueteDatos.writeObject(new ConfirmacionSolicitud(false,solicitud.getNombrePropio()));  //escribir con este o con flujoSalida???	
+	        			}
         			}
         		} else if (object instanceof Boolean) { //Me llega la confirmación de la solicitud de chat que envié anteriormenta
         			boolean bool = (boolean) object;
@@ -189,6 +197,7 @@ public class Cliente implements Runnable{
         			if (bool) {
         				ControladorCliente.getInstancia().setSolicitante(true);
         				this.aceptada=true;
+        				this.estoyEnLlamada=true;
         				ControladorCliente.getInstancia().ventanaChat();
         			} else {
         				JOptionPane.showMessageDialog(null, "Tu solicitud ha sido rechazada :(");
@@ -197,6 +206,8 @@ public class Cliente implements Runnable{
         			Mensaje mensaje = (Mensaje) object;
         			ControladorCliente.getInstancia().actualizaChat(mensaje.getNombreMio(), mensaje.getMensaje());
         			
+        		} else if (object instanceof ClienteNoDisponible){
+        			JOptionPane.showMessageDialog(null, "El usuario no está disponible!");
         		} else {
         			System.out.println("MANDASTE CUALQUIERA");
         		}

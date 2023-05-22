@@ -17,6 +17,7 @@ import java.util.Iterator;
 
 import controlador.ControladorCliente;
 import controlador.ControladorServidor;
+import modelo.ClienteNoDisponible;
 import modelo.ConfirmacionSolicitud;
 import modelo.Mensaje;
 import modelo.MensajeCliente;
@@ -193,7 +194,22 @@ public class Servidor implements Runnable {
                       	  
                     	  
                     	  
-                      } else {
+                      } else if (object instanceof ClienteNoDisponible){
+                    	  ClienteNoDisponible cdp = (ClienteNoDisponible) object;
+                    	  int puerto = Servidor.getInstancia().getClientes().get(cdp.getNombre());
+                    	  int i=0;
+                    	  
+                      	  while (i<sockets.size() && sockets.get(i).getPort()!=puerto) {
+                      		System.out.println("Soquet numero "+ i + " Puerto :" +sockets.get(i).getLocalPort());
+                      		i++;
+                      	  }
+                      	  
+                      	flujoSalida = new ObjectOutputStream(sockets.get(i).getOutputStream());
+                        flujoSalida.writeObject(cdp);
+                      	  
+                    	  
+                    	  
+                      }else {
                     	System.out.println("recibi cualquier cosa");
                     	System.out.println(object.toString());
                     }
